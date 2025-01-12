@@ -18,7 +18,7 @@ proc setSources {} {
 
 # ==============================================================================
 proc setAddressSpace {} {
-  addAddressSpace ::fwfwk::AddressSpace "pl_regs" ARRAY {C0 0x00800000 8M} app::AddressSpace
+  #addAddressSpace ::fwfwk::AddressSpace "pl_regs" ARRAY {C0 0x00800000 8M} app::AddressSpace
 
 }
 

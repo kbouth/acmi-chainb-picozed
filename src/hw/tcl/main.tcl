@@ -18,9 +18,10 @@ proc setSources {} {
 
   
   lappend Sources {"../hdl/top.vhd" "VHDL 2008"} 
- 
+  lappend Sources {"../hdl/acmi_package.vhd" "VHDL 2008"} 
 
-  #lappend Sources {"../cstr/gth.xdc"  "XDC"}   
+  lappend Sources {"../cstr/pins.xdc"  "XDC"} 
+  lappend Sources {"../cstr/gtp.xdc"  "XDC"}     
   #lappend Sources {"../cstr/timing.xdc"  "XDC"} 
   #lappend Sources {"../cstr/debug.xdc"  "XDC"} 
   
@@ -29,10 +30,10 @@ proc setSources {} {
 
 # ==============================================================================
 proc setAddressSpace {} {
-   ::fwfwk::printCBM "In ./hw/src/main.tcl setAddressSpace()..."
-  variable AddressSpace
+  # ::fwfwk::printCBM "In ./hw/src/main.tcl setAddressSpace()..."
+  #variable AddressSpace
   
-  addAddressSpace AddressSpace "pl_regs"   RDL  {} ../rdl/pl_regs.rdl
+  #addAddressSpace AddressSpace "pl_regs"   RDL  {} ../rdl/pl_regs.rdl
 
 }
 
@@ -48,9 +49,7 @@ proc doOnCreate {} {
   set_property target_language  VHDL                         [current_project]
   set_property default_lib      xil_defaultlib               [current_project]
    
-  #set_property used_in_synthesis false [get_files /home/mead/rfbpm/fwk/zubpm/src/hw/hdl/top_tb.sv] 
-  #set_property used_in_implementation false [get_files  top_tb.v] 
-   
+  
   #source ${TclPath}/system.tcl
   #source ${TclPath}/evr_gth.tcl
   #source ${TclPath}/gth_artix.tcl
@@ -63,8 +62,8 @@ proc doOnCreate {} {
   ::fwfwk::printCBM "TclPath = ${TclPath}"
   ::fwfwk::printCBM "SrcPath = ${::fwfwk::SrcPath}"
   
-  set_property used_in_synthesis false [get_files ${::fwfwk::SrcPath}/hw/hdl/top_tb.sv] 
-  set_property used_in_implementation false [get_files ${::fwfwk::SrcPath}/hw/hdl/top_tb.sv] 
+  #set_property used_in_synthesis false [get_files ${::fwfwk::SrcPath}/hw/hdl/top_tb.sv] 
+  #set_property used_in_implementation false [get_files ${::fwfwk::SrcPath}/hw/hdl/top_tb.sv] 
   
   #open_wave_config "${::fwfwk::SrcPath}/hw/sim/top_tb_behav.wcfg"
   

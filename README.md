@@ -4,16 +4,29 @@ Gateware for ACMI Frontend.  Uses custom Artix board as the hardware platform.  
 
 Uses the DESY FWK FPGA Firmware Framework https://fpgafw.pages.desy.de/docs-pub/fwk/index.html
 
-Clone with --recurse-submodules to get the FWK repos
+Clone with --recurse-submodules to get the FWK repos:
 
-git clone --recurse-submodules https://github.com/jamead/acmi-chaina
+    git clone --recurse-submodules git@github.com:kbouth/acmi-chainb.git
 
-Setup Environment: make env (first time only)
+Setup Environment (first time only): 
+    
+    make env
 
-To build firmware make cfg=hw project (Sets up project)
+If error shows up, do this before make env:
 
-make cfg=hw gui (Open in Vivado)
+    python3 -m venv env
+    source env/bin/activate
 
-make cfg=hw build (Builds bit file)
 
+To build firmware: 
+
+     make cfg=hw project (Sets up project)
+     
+     make cfg=hw gui (Open in Vivado)
+     
+     make cfg=hw build (Builds bit file)
+     
+     make cfg=sw gui (Opens Vitis)
+     
+     make cfg=sw build (Builds Vitis program & boot file)
 

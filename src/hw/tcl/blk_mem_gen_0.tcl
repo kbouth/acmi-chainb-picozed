@@ -64,7 +64,7 @@ set blk_mem_gen_0 [create_ip -name blk_mem_gen -vendor xilinx.com -library ip -v
 
 # User Parameters
 set_property -dict [list \
-  CONFIG.Coe_File {/home/bouthsarath/acmi-chainb/prj/zubpm_hw/zubpm_hw.srcs/sources_1/imports/acmi-chainb/adc_data.coe} \
+  CONFIG.Coe_File {../../../../../../src/hw/hdl/adc_data.coe} \
   CONFIG.Enable_A {Always_Enabled} \
   CONFIG.Fill_Remaining_Memory_Locations {false} \
   CONFIG.Load_Init_File {true} \

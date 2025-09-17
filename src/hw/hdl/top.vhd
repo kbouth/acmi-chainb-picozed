@@ -148,52 +148,53 @@ architecture behv of top is
   signal gtp_tx_clk         : std_logic;
 
   signal adc_rxdata         : std_logic_vector(15 downto 0);
-
+  signal beam_adc_delay_dbg : std_logic_vector(31 downto 0);
+  signal integral,peak_index           : std_logic_vector(31 downto 0); 
+  signal baseline, fwhm   : std_logic_vector(15 downto 0); 
+  signal peak   : std_logic_vector(16 downto 0); 
 
    --debug signals (connect to ila)
    attribute mark_debug                 : string;
-   attribute mark_debug of adc_data: signal is "true";
-   attribute mark_debug of soft_trig: signal is "true";
-   attribute mark_debug of tp_pos_pulse: signal is "true";
-   attribute mark_debug of tp_neg_pulse: signal is "true";
-   attribute mark_debug of ext_trig: signal is "true";
    attribute mark_debug of trig: signal is "true";
-   attribute mark_debug of fault_bad_power: signal is "true";
-   attribute mark_debug of fault_no_clock: signal is "true";
-   attribute mark_debug of fault_no_pulse: signal is "true";
-   attribute mark_debug of fault_no_trigger: signal is "true";
+   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
+   attribute mark_debug of integral: signal is "true";
+   attribute mark_debug of peak: signal is "true"; 
+   attribute mark_debug of peak_index: signal is "true"; 
+   attribute mark_debug of baseline: signal is "true";
+   attribute mark_debug of fwhm: signal is "true"; 
 
-   attribute mark_debug of acis_faultn: signal is "true";
-   attribute mark_debug of acis_fault_rdbk: signal is "true";
-   attribute mark_debug of acis_reset: signal is "true";
-   attribute mark_debug of acis_force_trip: signal is "true";
-   attribute mark_debug of acis_keylock: signal is "true";
-
-COMPONENT trig_vio
-  PORT (
-    clk : IN STD_LOGIC;
-    probe_out0 : OUT STD_LOGIC;
-    probe_out1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out3 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out4 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out5 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out6 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out7 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out8 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out9 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out10 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out11 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out12 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out13 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out14 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out15 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-    probe_out16 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
-  );
-END COMPONENT;
+--COMPONENT trig_vio
+--  PORT (
+--    clk : IN STD_LOGIC;
+--    probe_out0 : OUT STD_LOGIC;
+--    probe_out1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out3 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out4 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out5 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out6 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out7 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out8 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out9 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out10 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out11 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out12 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out13 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out14 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out15 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+--    probe_out16 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+--  );
+--END COMPONENT;
 
 
 begin
+
+beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
+integral <= pulse_stats(0).integral;
+peak  <= pulse_stats(0).peak;
+peak_index <= pulse_stats(0).peak_index; 
+baseline <= pulse_stats(0).baseline; 
+fwhm <= pulse_stats(0).fwhm; 
 
 --trig_debug : trig_vio
 --  PORT MAP (

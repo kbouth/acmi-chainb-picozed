@@ -67,56 +67,56 @@ architecture Behavioral of eeprom_interface is
     
     signal eeprom_state : state:= IDLE; 
     
-COMPONENT eeprom_ila
+--COMPONENT eeprom_ila
 
-PORT (
-	clk : IN STD_LOGIC;
+--PORT (
+--	clk : IN STD_LOGIC;
 
 
 
-	probe0 : IN STD_LOGIC; 
-	probe1 : IN STD_LOGIC; 
-	probe2 : IN STD_LOGIC; 
-	probe3 : IN STD_LOGIC; 
-	probe4 : IN STD_LOGIC; 
-	probe5 : IN STD_LOGIC; 
-	probe6 : IN state; 
-	probe7 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
-	probe8 : IN STD_LOGIC; 
-	probe9 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
-	probe10 : IN STD_LOGIC_VECTOR(15 DOWNTO 0); 
-	probe11 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-	probe12 : IN STD_LOGIC; 
-	probe13 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
-	probe14 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
-	probe15 : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-	probe16 : IN STD_LOGIC_VECTOR(7 DOWNTO 0)
-);
-END COMPONENT  ;
+--	probe0 : IN STD_LOGIC; 
+--	probe1 : IN STD_LOGIC; 
+--	probe2 : IN STD_LOGIC; 
+--	probe3 : IN STD_LOGIC; 
+--	probe4 : IN STD_LOGIC; 
+--	probe5 : IN STD_LOGIC; 
+--	probe6 : IN state; 
+--	probe7 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
+--	probe8 : IN STD_LOGIC; 
+--	probe9 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
+--	probe10 : IN STD_LOGIC_VECTOR(15 DOWNTO 0); 
+--	probe11 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--	probe12 : IN STD_LOGIC; 
+--	probe13 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
+--	probe14 : IN STD_LOGIC_VECTOR(7 DOWNTO 0); 
+--	probe15 : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+--	probe16 : IN STD_LOGIC_VECTOR(7 DOWNTO 0)
+--);
+--END COMPONENT  ;
     
 begin
 
-    eeprom_debug : eeprom_ila
-    PORT MAP (
-        clk => clk,
-        probe0 => sclk, 
-        probe1 => din, 
-        probe2 => dout, 
-        probe3 => csn, 
-        probe4 => holdn, 
-        probe5 => eeprom_rdy, 
-        probe6 => eeprom_state, 
-        probe7 => rddata, 
-        probe8 => spi_done, 
-        probe9 => opcode, 
-        probe10 => address,
-        probe11 => data_in,
-        probe12 => trig,
-        probe13 => eeprom_data(40),
-        probe14 => eeprom_data(41),
-        probe15 => eeprom_data(42),
-        probe16 => eeprom_data(43)
-    );
+--    eeprom_debug : eeprom_ila
+--    PORT MAP (
+--        clk => clk,
+--        probe0 => sclk, 
+--        probe1 => din, 
+--        probe2 => dout, 
+--        probe3 => csn, 
+--        probe4 => holdn, 
+--        probe5 => eeprom_rdy, 
+--        probe6 => eeprom_state, 
+--        probe7 => rddata, 
+--        probe8 => spi_done, 
+--        probe9 => opcode, 
+--        probe10 => address,
+--        probe11 => data_in,
+--        probe12 => trig,
+--        probe13 => eeprom_data(40),
+--        probe14 => eeprom_data(41),
+--        probe15 => eeprom_data(42),
+--        probe16 => eeprom_data(43)
+--    );
 
     eeprom_fsm : process(clk) begin 
         if(rising_edge(clk)) then 

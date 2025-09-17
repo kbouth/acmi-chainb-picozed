@@ -72,21 +72,21 @@ architecture Behavioral of tx_kria_data is
     signal present_state : state := IDLE; 
     signal adc_count : integer := 0; 
     
-    COMPONENT fifo_ila
-    PORT (
-        clk : IN STD_LOGIC;    
-        probe0 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-        probe1 : IN STD_LOGIC; 
-        probe2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-        probe3 : IN STD_LOGIC; 
-        probe4 : IN STD_LOGIC; 
-        probe5 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-        probe6 : IN STD_LOGIC; 
-        probe7 : IN STD_LOGIC; 
-        probe8 : IN state;
-        probe9 : IN integer
-    );
-    END COMPONENT  ;
+--    COMPONENT fifo_ila
+--    PORT (
+--        clk : IN STD_LOGIC;    
+--        probe0 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--        probe1 : IN STD_LOGIC; 
+--        probe2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--        probe3 : IN STD_LOGIC; 
+--        probe4 : IN STD_LOGIC; 
+--        probe5 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--        probe6 : IN STD_LOGIC; 
+--        probe7 : IN STD_LOGIC; 
+--        probe8 : IN state;
+--        probe9 : IN integer
+--    );
+--    END COMPONENT  ;
     
 begin
   
@@ -103,20 +103,20 @@ begin
       );
       
       
-    fifo_debug : fifo_ila
-    PORT MAP (
-        clk => clk,
-        probe0 => tx_data, 
-        probe1 => tx_data_enb, 
-        probe2 => adc_data_in, 
-        probe3 => wr_en, 
-        probe4 => rd_en, 
-        probe5 => tx_data_out, 
-        probe6 => full, 
-        probe7 => empty, 
-        probe8 => present_state,
-        probe9 => adc_count
-    );
+--    fifo_debug : fifo_ila
+--    PORT MAP (
+--        clk => clk,
+--        probe0 => tx_data, 
+--        probe1 => tx_data_enb, 
+--        probe2 => adc_data_in, 
+--        probe3 => wr_en, 
+--        probe4 => rd_en, 
+--        probe5 => tx_data_out, 
+--        probe6 => full, 
+--        probe7 => empty, 
+--        probe8 => present_state,
+--        probe9 => adc_count
+--    );
 
     fsm: process(clk) begin 
         if(rising_edge(clk)) then 

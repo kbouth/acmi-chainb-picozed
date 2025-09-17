@@ -184,22 +184,22 @@ port
         ); 
 end component;
 
-    COMPONENT tx_ila
-    PORT (
-        clk : IN STD_LOGIC;
-        probe0 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-        probe1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-        probe2 : IN STD_LOGIC;
-        probe3 : IN STD_LOGIC_VECTOR(3 downto 0);
-        probe4 : IN STD_LOGIC;
-        probe5 : IN STD_LOGIC;
-        probe6 : IN STD_LOGIC_VECTOR(3 downto 0);
-        probe7 : IN STD_LOGIC_VECTOR(31 downto 0);
-        probe8 : IN STD_LOGIC;
-        probe9 : IN STD_LOGIC;
-        probe10 : IN STD_LOGIC
-    );
-    END COMPONENT  ;   
+--    COMPONENT tx_ila
+--    PORT (
+--        clk : IN STD_LOGIC;
+--        probe0 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--        probe1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--        probe2 : IN STD_LOGIC;
+--        probe3 : IN STD_LOGIC_VECTOR(3 downto 0);
+--        probe4 : IN STD_LOGIC;
+--        probe5 : IN STD_LOGIC;
+--        probe6 : IN STD_LOGIC_VECTOR(3 downto 0);
+--        probe7 : IN STD_LOGIC_VECTOR(31 downto 0);
+--        probe8 : IN STD_LOGIC;
+--        probe9 : IN STD_LOGIC;
+--        probe10 : IN STD_LOGIC
+--    );
+--    END COMPONENT  ;   
     
     signal txclkout_buf : std_logic;  
     signal rxclkout_buf : std_logic;  

@@ -59,36 +59,36 @@ architecture Behavioral of rx_kria_data is
    signal sync1, sync2, sync : std_logic; 
    
     
-  COMPONENT ila_0
-    PORT (
-        clk : IN STD_LOGIC;
-	    probe0 : IN STD_LOGIC; 
-	    probe1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-	    probe2 : IN STD_LOGIC; 
-	    probe3 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
-	    probe4 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-	    probe5 : IN decoder_states;
-	    probe6 : IN STD_LOGIC; 
-	    probe7 : IN STD_LOGIC; 
-	    probe8 : IN STD_LOGIC_VECTOR(31 DOWNTO 0)
-    );
-    END COMPONENT; 
+--  COMPONENT ila_0
+--    PORT (
+--        clk : IN STD_LOGIC;
+--	    probe0 : IN STD_LOGIC; 
+--	    probe1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--	    probe2 : IN STD_LOGIC; 
+--	    probe3 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
+--	    probe4 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+--	    probe5 : IN decoder_states;
+--	    probe6 : IN STD_LOGIC; 
+--	    probe7 : IN STD_LOGIC; 
+--	    probe8 : IN STD_LOGIC_VECTOR(31 DOWNTO 0)
+--    );
+--    END COMPONENT; 
     
 begin
 
-    debug : ila_0
-    PORT MAP (
-        clk => clk,
-        probe0 => rst, 
-        probe1 => gtp_rx_data, 
-        probe2 => trig, 
-        probe3 => address, 
-        probe4 => rdata, 
-        probe5 => state,
-        probe6 =>  params.eeprom_trig,
-        probe7 => params.eeprom_readall,
-        probe8 => params.eeprom_wrdata
-    );
+--    debug : ila_0
+--    PORT MAP (
+--        clk => clk,
+--        probe0 => rst, 
+--        probe1 => gtp_rx_data, 
+--        probe2 => trig, 
+--        probe3 => address, 
+--        probe4 => rdata, 
+--        probe5 => state,
+--        probe6 =>  params.eeprom_trig,
+--        probe7 => params.eeprom_readall,
+--        probe8 => params.eeprom_wrdata
+--    );
 
     fsm: process(gtp_rx_clk) begin 
             if(rising_edge(gtp_rx_clk)) then 

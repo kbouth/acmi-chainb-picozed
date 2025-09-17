@@ -15,51 +15,64 @@ end calc_integ;
 architecture Behavioral of calc_integ is
 
   -- FSM states
-  type state_type is (IDLE, INTEGRATE, DONE);
-  signal present_state : state_type := IDLE;
+  type state_type is (IDLE, INTEGRATE);
+  signal present_state : state_type:= IDLE;
 
-  constant INTEG_LEN : unsigned(5 downto 0) := to_unsigned(40, 6);  -- 6 bits = count to 40
-  signal counter      : unsigned(5 downto 0) := (others => '0');
+  constant INTEG_LEN : integer := 40;  -- 6 bits = count to 40
+  signal counter      : integer;
 
   signal accumulator  : signed(31 downto 0) := (others => '0');
-  signal result       : signed(31 downto 0) := (others => '0');
+  signal result,result_d      : signed(31 downto 0) := (others => '0');
+  signal accum,adc_bs : signed(31 downto 0); 
+  signal prev_trig    : std_logic; 
 
 begin
-
-  process(clk)
+  
+  accum_val : process(clk) begin 
+    if(rising_edge(clk)) then 
+       adc_bs <= abs(resize(adc_data, 32) - baseline);
+       if(adc_bs <= 0) then 
+            accum <= 32d"0"; 
+       else 
+            accum <= adc_bs; 
+       end if; 
+    end if; 
+  end process; 
+  
+  
+  fsm: process(clk)
   begin
     if rising_edge(clk) then
+    
+      prev_trig    <= trig;
+      
       case present_state is
 
         when IDLE =>
-          if trig = '1' then
-            accumulator   <= (others => '0');
-            counter       <= (others => '0');
+          if (prev_trig = '0' and trig = '1') then
+            accumulator   <= 32d"0";
+            counter       <= INTEG_LEN - 1;
             present_state <= INTEGRATE;
           end if;
 
         when INTEGRATE =>
-          -- Subtract baseline, accumulate
-          if(abs((resize(adc_data, 32) - baseline)) >= 1) then 
-            accumulator <= accumulator + resize(adc_data, 32) - baseline;
+
+          if counter = 0 then
+            result  <= accumulator; 
+            present_state <= IDLE;
           else 
-            accumulator <= accumulator; 
-          end if; 
-          
-          counter <= counter + 1;
-
-          if counter = INTEG_LEN - 1 then
-            present_state <= DONE;
+            counter <= counter - 1;
+            accumulator <= signed(accumulator) + accum; 
           end if;
+        
+        when others => 
+            present_state <= IDLE; 
 
-        when DONE =>
-          result         <= accumulator;
-          present_state  <= IDLE;
       end case;
     end if;
   end process;
 
-  -- Output stays stable after DONE
-  integration <= result;
+  -- Output stays stable after INTEGRATION
+  integration    <= result;
 
 end Behavioral;

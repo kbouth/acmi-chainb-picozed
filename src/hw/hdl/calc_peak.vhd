@@ -51,6 +51,8 @@ architecture Behavioral of calc_peak is
     signal peak_index : std_logic_vector(31 downto 0):=(others => '0');
     signal peak_temp  : signed(15 downto 0):=(others => '0');  
     signal index : std_logic_vector(31 downto 0):= (others => '0'); 
+    signal prev_trig : std_logic; 
+    
     
 
 begin
@@ -58,11 +60,14 @@ begin
 
     peak_fsm: process(clk) begin 
         if(rising_edge(clk)) then 
+        
+            prev_trig <= trig; 
+            
             case present_state is
                 when IDLE => 
                     peak_found <= '0'; 
                     
-                    if(trig = '1') then 
+                    if(prev_trig = '0' and trig = '1') then 
                         present_state <= PEAK; 
                     end if; 
 
@@ -73,7 +78,7 @@ begin
                        peak_temp <= adc_data; 
                     end if; 
                         
-                    if(trig = '0') then 
+                    if(prev_trig = '1' and trig = '0') then 
                         peak_val <= peak_temp; 
                         peak_idx <= peak_index;  
                         present_state <= DONE; 

@@ -60,6 +60,10 @@ END COMPONENT;
 
 -- shift the adc_data by 40 clocks
 signal adc_data_dly : STD_LOGIC_VECTOR(15 downto 0); 
+signal pulse_stats_d : pulse_stats_array; 
+signal adc_data_in   : std_logic_vector(15 downto 0); 
+signal beam_adc_delay : std_logic_vector(31 downto 0); 
+
 begin
   adc_shift : c_shift_ram_0
   PORT MAP (
@@ -68,6 +72,12 @@ begin
     Q => adc_data_dly
   );
   
+--process(clk) begin 
+--    if(rising_edge(clk)) then 
+--        beam_adc_delay <= params.beam_adc_delay; 
+--    end if; 
+--end process; 
+
 -- beam 
 beam:  entity work.calc_stats
   port map ( 

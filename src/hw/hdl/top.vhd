@@ -156,67 +156,28 @@ architecture behv of top is
    --debug signals (connect to ila)
    attribute mark_debug                 : string;
    attribute mark_debug of trig: signal is "true";
-   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
+--   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
    attribute mark_debug of integral: signal is "true";
    attribute mark_debug of peak: signal is "true"; 
    attribute mark_debug of peak_index: signal is "true"; 
    attribute mark_debug of baseline: signal is "true";
    attribute mark_debug of fwhm: signal is "true"; 
 
---COMPONENT trig_vio
---  PORT (
---    clk : IN STD_LOGIC;
---    probe_out0 : OUT STD_LOGIC;
---    probe_out1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out3 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out4 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out5 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out6 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out7 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out8 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out9 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out10 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out11 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out12 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out13 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out14 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out15 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe_out16 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
---  );
---END COMPONENT;
-
 
 begin
 
-beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
+process(adc_clk)
+begin
+  if rising_edge(adc_clk) then
+--beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
 integral <= pulse_stats(0).integral;
 peak  <= pulse_stats(0).peak;
 peak_index <= pulse_stats(0).peak_index; 
 baseline <= pulse_stats(0).baseline; 
 fwhm <= pulse_stats(0).fwhm; 
+  end if;
+end process;
 
---trig_debug : trig_vio
---  PORT MAP (
---    clk => adc_clk,
---    probe_out0 => trig,
---    probe_out1 => eeprom_params.tp1_pos_level,
---    probe_out2 => eeprom_params.tp2_pos_level,
---    probe_out3 => eeprom_params.tp3_pos_level,
---    probe_out4 => eeprom_params.tp1_neg_level,
---    probe_out5 => eeprom_params.tp2_neg_level,
---    probe_out6 => eeprom_params.tp3_neg_level,
---    probe_out7 => eeprom_params.tp1_pulse_delay,
---    probe_out8 => eeprom_params.tp2_pulse_delay,
---    probe_out9 => eeprom_params.tp3_pulse_delay,
---    probe_out10 => eeprom_params.tp1_pulse_width,
---    probe_out11 => eeprom_params.tp2_pulse_width,
---    probe_out12 => eeprom_params.tp3_pulse_width,
---    probe_out13 => eeprom_params.beam_adc_delay,
---    probe_out14 => eeprom_params.tp1_adc_delay,
---    probe_out15 => eeprom_params.tp2_adc_delay,
---    probe_out16 => eeprom_params.tp3_adc_delay
---  );
 
 dbg(0) <= adc_clk;
 dbg(1) <= gtp_refclk;
@@ -282,22 +243,6 @@ keylock_detect_led <= not acis_keylock_debounced;
 --    button => acis_keylock,
 --    result => acis_keylock_debounced
 --);
-
-
---trig_pul: process(adc_clk)
---    variable cnt : integer := 0;
---    constant PERIOD : integer := 4000; -- adjust for desired rate
---begin
---    if rising_edge(adc_clk) then
---        if cnt = PERIOD - 1 then
---            cnt := 0;
---            trig_pulse <= '1';
---        else
---            cnt := cnt + 1;
---            trig_pulse <= '0';
---        end if;
---    end if;
---end process;
 
 
 timing: entity work.gen_timing_events

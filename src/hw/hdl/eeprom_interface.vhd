@@ -54,11 +54,11 @@ architecture Behavioral of eeprom_interface is
     signal opcode : std_logic_vector(7 downto 0);
     signal address: std_logic_vector(15 downto 0); 
     signal data_in: std_logic_vector(31 downto 0); 
-    signal rddata32 : std_logic_vector(31 downto 0); 
+    signal rddata32,rddata32_sync : std_logic_vector(31 downto 0); 
     signal rddata   : std_logic_vector(7 downto 0); 
     signal trig   : std_logic; 
     
-    signal prev_spi_done, spi_done   : std_logic; 
+    signal prev_spi_done, spi_done, spi_sync   : std_logic; 
     signal wr_rd      : std_logic; 
     signal bytes      : integer range 0 to 200; 
     
@@ -66,16 +66,35 @@ architecture Behavioral of eeprom_interface is
     type state is (IDLE,SINGLE_TRANS,RD_ALL_EEPROM,WAIT_EEPROM,DONE); 
     
     signal eeprom_state : state:= IDLE; 
-    signal prev_csn     : std_logic; 
+    signal prev_csn, csn_sync     : std_logic; 
+    signal beam_adc_delay : std_logic_vector(31 downto 0); 
+    
+    attribute mark_debug                 : string;
+    attribute mark_debug of trig: signal is "true";
+    attribute mark_debug of eeprom_rdy: signal is "true";
+    attribute mark_debug of eeprom_state : signal is "true"; 
+    attribute mark_debug of opcode : signal is "true"; 
+    attribute mark_debug of address: signal is "true"; 
+    attribute mark_debug of rddata : signal is "true"; 
+    attribute mark_debug of bytes: signal is "true"; 
     
     
 begin
 
+    
+    sync : process(clk) begin 
+        if(rising_edge(clk)) then 
+            spi_sync <= spi_done; 
+            csn_sync <= csn; 
+            rddata32_sync <= rddata32; 
+        end if; 
+    end process; 
+    
     eeprom_fsm : process(clk) begin 
         if(rising_edge(clk)) then 
             
-            prev_spi_done <= spi_done; 
-            prev_csn <= csn; 
+            prev_spi_done <= spi_sync; 
+            prev_csn <= csn_sync; 
             
             if(reset = '1') then 
                 opcode <= (others => '0'); 
@@ -106,7 +125,7 @@ begin
                         opcode <= pzed_params.eeprom_wrdata(31 downto 24);
                         address <= pzed_params.eeprom_wrdata(23 downto 8); 
                         data_in <= (23 downto 0 => '0') & pzed_params.eeprom_wrdata(7 downto 0); 
-                        if(prev_spi_done = '0' and spi_done = '1') then 
+                        if(prev_spi_done = '0' and spi_sync = '1') then 
                             eeprom_state <= DONE;
                         else 
                             eeprom_state <= SINGLE_TRANS; 
@@ -116,7 +135,7 @@ begin
                         trig <= '1'; 
                         opcode <= "00000011";
                         eeprom_state <= WAIT_EEPROM;
-                        if(prev_spi_done = '0' and spi_done = '1') then
+                        if(prev_spi_done = '0' and spi_sync = '1') then
                             eeprom_state <= WAIT_EEPROM; 
                         else
                             eeprom_state <= RD_ALL_EEPROM;
@@ -129,7 +148,7 @@ begin
                             if(bytes = EEPROM_LEN) then 
                                 eeprom_state <= DONE; 
                             else 
-                                if(prev_csn = '1' and csn = '0') then 
+                                if(prev_csn = '1' and csn_sync = '0') then 
                                     eeprom_state <= RD_ALL_EEPROM;
                                     address <= address + x"1"; 
                                     bytes <= bytes + 1;
@@ -172,11 +191,11 @@ begin
             spi_done => spi_done         
     );
     
-    rddata <= rddata32(31 downto 24); --only the 8 MSB bits will be used.  
+    rddata <= rddata32_sync(31 downto 24); --only the 8 MSB bits will be used.  
 
     eeprom_synth: process (clk) begin 
       if (rising_edge(clk)) then
-        if(eeprom_rdy = '1') then 
+--        if(eeprom_rdy = '1') then 
           eeprom_params.header               <= eeprom_data(0) & eeprom_data(1) & eeprom_data(2) & eeprom_data(3);
           eeprom_params.tp1_pulse_delay      <= eeprom_data(4) & eeprom_data(5) & eeprom_data(6) & eeprom_data(7);
           eeprom_params.tp1_pulse_width      <= eeprom_data(8) & eeprom_data(9) & eeprom_data(10) & eeprom_data(11); 
@@ -228,7 +247,7 @@ begin
           eeprom_params.accum_length         <= eeprom_data(192) & eeprom_data(193) & eeprom_data(194) & eeprom_data(195);    
           eeprom_params.crc32_eeprom         <= eeprom_data(196) & eeprom_data(197) & eeprom_data(198) & eeprom_data(199);
          end if;
-         end if;
+--         end if;
     end process;
 
 end Behavioral;

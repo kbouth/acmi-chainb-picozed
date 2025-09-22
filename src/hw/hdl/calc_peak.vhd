@@ -37,6 +37,7 @@ entity calc_peak is
     trig : in std_logic;
     adc_data : in signed(15 downto 0); 
     samp_num : in std_logic_vector(31 downto 0); 
+    polarity : in std_logic; 
     peak_val : out signed(15 downto 0); 
     peak_idx : out std_logic_vector(31 downto 0); 
     peak_found : out std_logic
@@ -73,10 +74,18 @@ begin
 
                 when PEAK => 
                 
-                    if(abs(adc_data) > abs(peak_temp)) then 
+                    if(polarity = '0') then 
+                        if(adc_data > peak_temp) then 
                        peak_index <= samp_num;
                        peak_temp <= adc_data; 
-                    end if; 
+                        end if;
+                    else 
+                        if(adc_data < peak_temp) then 
+                       peak_index <= samp_num;
+                       peak_temp <= adc_data; 
+                        end if;
+                    
+                    end if;  
                         
                     if(prev_trig = '1' and trig = '0') then 
                         peak_val <= peak_temp; 

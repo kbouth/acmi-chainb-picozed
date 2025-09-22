@@ -83,6 +83,7 @@ beam:  entity work.calc_stats
   port map ( 
    clk => clk, 
    trig => trig,
+   polarity => '1',
    adc_data => signed(adc_data),
    adc_data_dly => signed(adc_data_dly), 
    gate_start => params.beam_adc_delay,  

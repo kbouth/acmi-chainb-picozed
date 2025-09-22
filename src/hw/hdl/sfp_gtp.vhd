@@ -242,13 +242,6 @@ end component;
     signal rxprbssel_in   : std_logic_vector(2 downto 0);  
     signal txprbssel_in   : std_logic_vector(2 downto 0);
 
---    -- ATTRIBUTE DECLARATION --  
-ATTRIBUTE MARK_DEBUG : STRING;
-ATTRIBUTE MARK_DEBUG OF reset : SIGNAL IS "true";
-ATTRIBUTE MARK_DEBUG OF txusrclk_out : SIGNAL IS "true";
-ATTRIBUTE MARK_DEBUG OF txusrclk2_out : SIGNAL IS "true";
-ATTRIBUTE MARK_DEBUG OF rxusrclk_out : SIGNAL IS "true";
-ATTRIBUTE MARK_DEBUG OF rxusrclk2_out : SIGNAL IS "true";
 
 type tx_state  is (IDLE, TX, DELAY); 
 signal delay_cnt : integer := 0; 
@@ -279,22 +272,6 @@ signal gtp_tx_data_enb_sync1, gtp_tx_data_enb_sync2 : std_logic;
 
     
 begin
-
---        ila : tx_ila
---        PORT MAP (
---            clk => sys_clk,
---            probe0 => rx_data_sync2, 
---            probe1 => tx_data, 
---            probe2 => rxresetdone,
---            probe3 => rx_charisk_corrected,
---            probe4 => fsm_rxresetdone,
---            probe5 => fsm_txresetdone,
---            probe6 => txcharisk, 
---            probe7 => gtp_tx_data, 
---            probe8 => gtp_tx_data_enb_sync2, 
---            probe9 => txusrclk2_out, 
---            probe10 => correct_rx
---        );
     
        Mhz100 : clk_wiz_0
        port map ( 

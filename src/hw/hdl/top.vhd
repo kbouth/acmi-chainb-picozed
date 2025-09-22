@@ -156,7 +156,7 @@ architecture behv of top is
    --debug signals (connect to ila)
    attribute mark_debug                 : string;
    attribute mark_debug of trig: signal is "true";
---   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
+   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
    attribute mark_debug of integral: signal is "true";
    attribute mark_debug of peak: signal is "true"; 
    attribute mark_debug of peak_index: signal is "true"; 
@@ -169,7 +169,7 @@ begin
 process(adc_clk)
 begin
   if rising_edge(adc_clk) then
---beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
+beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
 integral <= pulse_stats(0).integral;
 peak  <= pulse_stats(0).peak;
 peak_index <= pulse_stats(0).peak_index; 
@@ -372,29 +372,29 @@ spi_comm: entity work.rx_kria_data
 
 
 ----artix to backend zuDFE data
---send_results: entity work.tx_kria_data
-----  generic map (
-----    FPGA_VERSION => FPGA_VERSION
-----  )
---  port map (
---    clk => adc_clk,
---    reset => reset,
---    trig => trig,
-----    startup_cnt => startup_cnt,
-----    acis_readbacks => acis_readbacks,
-----    beam_cycle_window => beam_cycle_window,
---    adc_data => adc_data,
-----    adc_data_dly => adc_data_dly,
-----    pulse_stats => pulse_stats,
---    eeprom_params => eeprom_params,
-----    faults_rdbk => faults_rdbk,
-----    faults_lat => faults_lat,
-----    timestamp => timestamp,
-----    accum => accum,
-----    charge_oow => charge_oow,
---    tx_data => gtp_tx_data,
---    tx_data_enb => gtp_tx_data_enb
--- );
+send_results: entity work.tx_kria_data
+  generic map (
+    FPGA_VERSION => FPGA_VERSION
+  )
+  port map (
+    clk => adc_clk,
+    reset => reset,
+    trig => trig,
+--    startup_cnt => startup_cnt,
+--    acis_readbacks => acis_readbacks,
+--    beam_cycle_window => beam_cycle_window,
+    adc_data => adc_data,
+--    adc_data_dly => adc_data_dly,
+    pulse_stats => pulse_stats,
+    eeprom_params => eeprom_params,
+--    faults_rdbk => faults_rdbk,
+--    faults_lat => faults_lat,
+--    timestamp => timestamp,
+--    accum => accum,
+--    charge_oow => charge_oow,
+    tx_data => gtp_tx_data,
+    tx_data_enb => gtp_tx_data_enb
+ );
 
 
 ---- GTP transceiver for fiber communication

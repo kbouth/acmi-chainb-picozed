@@ -303,7 +303,7 @@ begin
         if reset = '1' then 
           sdo_buffer <= (others => '0');   
         else
-          if  falling_edge(sclk_int) then 
+          if (rising_edge(sclk_int)) then 
             case present_state is 
                 when RDSR =>
                     if clk_pulses <= 8 then 

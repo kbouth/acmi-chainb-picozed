@@ -6,6 +6,7 @@ entity calc_integ is
   Port ( 
     clk         : in  std_logic; 
     trig        : in  std_logic; 
+    polarity    : in std_logic; 
     adc_data    : in  signed(15 downto 0); 
     baseline    : in  signed(31 downto 0); 
     integration : out signed(31 downto 0)
@@ -30,11 +31,20 @@ begin
   
   accum_val : process(clk) begin 
     if(rising_edge(clk)) then 
-       adc_bs <= abs(resize(adc_data, 32) - baseline);
-       if(adc_bs <= 0) then 
-            accum <= 32d"0"; 
+       adc_bs <= resize(adc_data, 32) - baseline;
+       
+       if(polarity = '0') then 
+           if(adc_bs <= 0) then 
+                accum <= 32d"0"; 
+           else 
+                accum <= adc_bs; 
+           end if;
        else 
-            accum <= adc_bs; 
+            if(adc_bs >= 0) then 
+                accum <= 32d"0"; 
+           else 
+                accum <= adc_bs; 
+           end if;
        end if; 
     end if; 
   end process; 

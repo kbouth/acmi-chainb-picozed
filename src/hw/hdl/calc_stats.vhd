@@ -48,6 +48,7 @@ entity calc_stats is
    adc_data_dly     : in signed(15 downto 0);
    gate_start       : in std_logic_vector(31 downto 0);
    adc_samplenum    : in std_logic_vector(31 downto 0);
+   polarity         : in std_logic; 
    pulse_stats      : out pulse_stats_type
   );
 end calc_stats;
@@ -149,12 +150,10 @@ begin
                     end if; 
                 
                 when TRIGG => 
-                    if(adc_samplenum >= gate_start) then 
+                    if(adc_samplenum = gate_start) then 
                         baseline_start <= '1'; 
                         active_cnt <= BASELINE_LEN - 1;
                         present_state <= BASELINE; 
-                    elsif adc_samplenum > gate_start + 200 then
-                        present_state <= IDLE; -- timeout fail-safe
                     end if;  
                
                     
@@ -199,6 +198,7 @@ begin
             trig => integration_start,
             adc_data => adc_data,
             baseline => baseline_avg,
+            polarity => polarity,
             integration => integration
         ); 
         
@@ -208,6 +208,7 @@ begin
             trig => integration_start,
             adc_data => adc_data,
             samp_num => adc_samplenum,
+            polarity => polarity,
             peak_val => peak_val,
             peak_idx => peak_idx,
             peak_found => peak_found

@@ -33,6 +33,7 @@ proc setSources {} {
   lappend Sources {"../hdl/eeprom_interface.vhd" "VHDL 2008"}
   lappend Sources {"../hdl/gen_timing_events.vhd" "VHDL 2008"}
   lappend Sources {"../hdl/pulse_gen.vhd" "VHDL 2008"}
+  lappend Sources {"../hdl/trig_pulse.vhd" "VHDL 2008"}
   lappend Sources {"../hdl/rx_kria_data.vhd" "VHDL 2008"}
   lappend Sources {"../hdl/sampnum.vhd" "VHDL 2008"}
   lappend Sources {"../hdl/sfp_gtp.vhd" "VHDL 2008"}
@@ -77,19 +78,11 @@ proc doOnCreate {} {
    
   
   source ${TclPath}/adc_fifo.tcl
-  source ${TclPath}/adc_interface_ila.tcl
   source ${TclPath}/blk_mem_gen_0.tcl
-  source ${TclPath}/calc_ila.tcl
-  source ${TclPath}/calc_ila_debug.tcl
   source ${TclPath}/clk_wiz_0.tcl
   source ${TclPath}/c_shift_ram_0.tcl
-  source ${TclPath}/eeprom_ila.tcl
-  source ${TclPath}/fifo_ila.tcl
   source ${TclPath}/gtwizard_0.tcl
-  source ${TclPath}/ila_0.tcl
-  source ${TclPath}/tpg_ila.tcl
-  source ${TclPath}/trig_vio.tcl
-  source ${TclPath}/tx_ila.tcl
+  source ${TclPath}/tx_fifo.tcl
   
 
   addSources "Sources" 

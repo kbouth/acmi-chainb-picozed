@@ -152,6 +152,8 @@ architecture behv of top is
   signal integral,peak_index           : std_logic_vector(31 downto 0); 
   signal baseline, fwhm   : std_logic_vector(15 downto 0); 
   signal peak   : std_logic_vector(16 downto 0); 
+  
+  signal fp_trig_dly_out : std_logic; 
 
    --debug signals (connect to ila)
    attribute mark_debug                 : string;
@@ -162,6 +164,8 @@ architecture behv of top is
    attribute mark_debug of peak_index: signal is "true"; 
    attribute mark_debug of baseline: signal is "true";
    attribute mark_debug of fwhm: signal is "true"; 
+   attribute mark_debug of adc_data: signal is "true";
+   attribute mark_debug of fp_trig_dly_out: signal is "true"; 
 
 
 begin
@@ -199,7 +203,7 @@ dbg_leds(3) <= spi_xfer_stretch;
 
 
 
-fiber_trig_fp <= trig; --beam_detect_window;
+fiber_trig_fp <= fp_trig_dly_out; --beam_detect_window;
 
 --inverter on LED drivers
 fiber_trig_led <= not trig_stretch;
@@ -258,13 +262,13 @@ timing: entity work.gen_timing_events
 --    beam_cycle_window => beam_cycle_window,
     adc_samplenum => adc_samplenum,
     tp_pos_pulse => tp_pos_pulse,
-    tp_neg_pulse => tp_neg_pulse
+    tp_neg_pulse => tp_neg_pulse,
 ----    timestamp => timestamp,
 ----    watchdog_clock => watchdog_clock,
 ----    watchdog_pulse => watchdog_pulse,
 ----    startup_cnt => startup_cnt,
 ----    fault_startup => fault_startup,
-----    fp_trig_dly_out => fp_trig_dly_out
+    fp_trig_dly_out => fp_trig_dly_out
 
  );
 
@@ -447,14 +451,14 @@ eeprom: entity work.eeprom_interface
 --	sig_out => spi_xfer_stretch
 --);
 
---stretch_1 : entity work.stretch
---  port map (
---	clk => adc_clk,
---	reset => '0',
---	sig_in => trig,
---	len => 4000000, -- ~25ms;
---	sig_out => trig_stretch
---);
+stretch_1 : entity work.stretch
+  port map (
+	clk => adc_clk,
+	reset => '0',
+	sig_in => trig,
+	len => 4000000, -- ~25ms;
+	sig_out => trig_stretch
+);
 
 
 

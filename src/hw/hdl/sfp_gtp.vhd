@@ -190,14 +190,9 @@ end component;
 --        probe0 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
 --        probe1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
 --        probe2 : IN STD_LOGIC;
---        probe3 : IN STD_LOGIC_VECTOR(3 downto 0);
+--        probe3 : IN STD_LOGIC;
 --        probe4 : IN STD_LOGIC;
---        probe5 : IN STD_LOGIC;
---        probe6 : IN STD_LOGIC_VECTOR(3 downto 0);
---        probe7 : IN STD_LOGIC_VECTOR(31 downto 0);
---        probe8 : IN STD_LOGIC;
---        probe9 : IN STD_LOGIC;
---        probe10 : IN STD_LOGIC
+--        probe5 : IN STD_LOGIC_VECTOR(3 downto 0)
 --    );
 --    END COMPONENT  ;   
     
@@ -242,10 +237,19 @@ end component;
     signal rxprbssel_in   : std_logic_vector(2 downto 0);  
     signal txprbssel_in   : std_logic_vector(2 downto 0);
 
+--    -- ATTRIBUTE DECLARATION --  
+--ATTRIBUTE MARK_DEBUG : STRING;
+--ATTRIBUTE MARK_DEBUG OF reset : SIGNAL IS "true";
+--ATTRIBUTE MARK_DEBUG OF txusrclk_out : SIGNAL IS "true";
+--ATTRIBUTE MARK_DEBUG OF txusrclk2_out : SIGNAL IS "true";
+--ATTRIBUTE MARK_DEBUG OF rxusrclk_out : SIGNAL IS "true";
+--ATTRIBUTE MARK_DEBUG OF rxusrclk2_out : SIGNAL IS "true";
 
-type tx_state  is (IDLE, TX, DELAY); 
+type tx_state  is (IDLE, TX); 
 signal delay_cnt : integer := 0; 
 signal state : tx_state := IDLE; 
+signal rd_en, full, empty : std_logic:= '0'; 
+signal tx_fifo_dout : std_logic_vector(31 downto 0); 
 
     signal Mhz100_clk     : std_logic; 
     signal Mhz31_25clk    : std_logic; 
@@ -259,6 +263,19 @@ signal state : tx_state := IDLE;
      );
     end component; 
 
+    COMPONENT tx_fifo
+      PORT (
+        rst : IN STD_LOGIC;
+        wr_clk : IN STD_LOGIC;
+        rd_clk : IN STD_LOGIC;
+        din : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        wr_en : IN STD_LOGIC;
+        rd_en : IN STD_LOGIC;
+        dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        full : OUT STD_LOGIC;
+        empty : OUT STD_LOGIC 
+      );
+    END COMPONENT;
 
 signal rx_data_corrected : std_logic_vector(31 downto 0); 
 signal rx_charisk_corrected: std_logic_vector(3 downto 0); 
@@ -272,6 +289,7 @@ signal gtp_tx_data_enb_sync1, gtp_tx_data_enb_sync2 : std_logic;
 
     
 begin
+
     
        Mhz100 : clk_wiz_0
        port map ( 
@@ -357,7 +375,7 @@ begin
             gt0_gttxreset_in                =>      '0',
             gt0_txuserrdy_in                =>      '1',
         ------------------ Transmit Ports - FPGA TX Interface Ports ----------------
-            gt0_txdata_in                   =>      gtp_tx_data,
+            gt0_txdata_in                   =>      tx_data,
         ------------------ Transmit Ports - TX 8B/10B Encoder Ports ----------------
             gt0_txcharisk_in                =>      txcharisk,
         --------------- Transmit Ports - TX Configurable Driver Ports --------------
@@ -383,6 +401,7 @@ begin
     
     );
     
+---------------------------- RX SIDE ------------------------------------------------------------------------------------    
     process(rxusrclk2_out) begin 
         if(rising_edge(rxusrclk2_out)) then
             if(reset = '1') then  
@@ -397,57 +416,6 @@ begin
     
     rx_data_corrected <= rx_data_internal(15 downto 0) & rx_data_internal(31 downto 16) when correct_rx = '1' else rx_data_internal;
     rx_charisk_corrected <= rxcharisk(1 downto 0) & rxcharisk(3 downto 2) when correct_rx = '1' else rxcharisk;
-
-    sync_proc: process(txusrclk2_out)
-begin
-    if rising_edge(txusrclk2_out) then
-        if( reset = '1') then
-            gtp_tx_data_enb_sync1 <= '0';
-            gtp_tx_data_enb_sync2 <= '0';
-        else 
-            gtp_tx_data_enb_sync1 <= gtp_tx_data_enb;
-            gtp_tx_data_enb_sync2 <= gtp_tx_data_enb_sync1;
-        end if; 
-    end if;
-end process;
-
-    write_tx: process(txusrclk2_out) 
-    begin  
-        if rising_edge(txusrclk2_out) then
-            if reset = '1' then 
-                tx_data <= x"505152BC";
-                txcharisk <= x"1";
-                state <= IDLE;  
-            else 
-                case state is 
-                    when IDLE =>
-                        tx_data <= x"505152BC";
-                        txcharisk <= x"1";
-                        if gtp_tx_data_enb_sync2 = '1' then
-                            state <= DELAY; 
-                        end if; 
-                    
-                    when DELAY =>
-                        tx_data <= x"505152BC";
-                        txcharisk <= x"1";
-                        if (delay_cnt < 16) then 
-                            delay_cnt <= delay_cnt + 1; 
-                            state <= DELAY; 
-                        else
-                            delay_cnt <= 0;
-                            state <= TX; 
-                        end if; 
-                        
-                    when TX => 
-                        tx_data <= gtp_tx_data;
-                        txcharisk <= x"0";
-                        if gtp_tx_data_enb_sync2 = '0' then 
-                            state <= IDLE;
-                        end if;  
-                end case; 
-            end if; 
-        end if; 
-    end process;
 
     prev_rx: process(rxusrclk2_out) 
     begin
@@ -487,27 +455,63 @@ end process;
                 end if; 
             end if;
         end process;
-    
---    process (txusrclk2_out)
---    begin
---      if (rising_edge(txusrclk2_out)) then
---        if (reset = '1') then
---          tx_data <= x"000050BC";
---          txcharisk <= x"1";
---          txcnt <= 0;
---        else
---          if (txcnt = 500) then
---            tx_data <= x"000050BC";
---            txcharisk <= x"1";
---            txcnt <= 0; 
---          else
-----            tx_data <= std_logic_vector(to_unsigned(txcnt,32));
---            tx_data <= txdata_debug; 
---            txcharisk <= x"0";
---            txcnt <= txcnt + 1;
---          end if;
---        end if;
---      end if;
---    end process;
+
+---------------------------- TX SIDE ------------------------------------------------------------------------------------ 
+
+    tx_data_fifo : tx_fifo
+    PORT MAP (
+        rst => reset,
+        wr_clk => sys_clk,
+        rd_clk => txusrclk2_out,
+        din => gtp_tx_data,
+        wr_en => gtp_tx_data_enb,
+        rd_en => rd_en,
+        dout => tx_fifo_dout,
+        full => full,
+        empty => empty
+    );
+  
+
+    write_tx: process(txusrclk2_out) 
+    begin  
+        if rising_edge(txusrclk2_out) then
+            if reset = '1' then 
+                tx_data <= x"505152BC";
+                txcharisk <= x"1";
+--                state <= IDLE;  
+            else 
+                if(empty = '0') then 
+                    tx_data <= tx_fifo_dout; 
+                    txcharisk <= x"0"; 
+                    rd_en <= '1'; 
+                else 
+                    tx_data <= x"505152BC"; 
+                    txcharisk <= x"1"; 
+                    rd_en <= '0'; 
+                end if; 
+--                case state is 
+--                    when IDLE =>
+--                        tx_data <= x"505152BC";
+--                        txcharisk <= x"1";
+--                        if empty = '0' then
+--                            state <= TX;
+--                            rd_en <= '1';  
+--                        end if; 
+
+                        
+--                    when TX => 
+--                        if (empty = '0') then 
+--                            tx_data <= tx_fifo_dout;
+--                            txcharisk <= x"0";
+--                            rd_en <= '1'; 
+--                        else
+--                            rd_en <= '0'; 
+--                            state <= IDLE; 
+--                        end if; 
+                          
+--                end case; 
+            end if; 
+        end if; 
+    end process;
 
 end Behavioral;

@@ -15,7 +15,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 ##################################################################
 
 # To test this script, run the following commands from Vivado Tcl console:
-# source calc_ila.tcl
+# source tx_fifo.tcl
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
 # in the current working folder.
@@ -34,7 +34,7 @@ if { $list_projs eq "" } {
 set bCheckIPs 1
 set bCheckIPsPassed 1
 if { $bCheckIPs == 1 } {
-  set list_check_ips { xilinx.com:ip:ila:6.2 }
+  set list_check_ips { xilinx.com:ip:fifo_generator:13.2 }
   set list_ips_missing ""
   common::send_msg_id "IPS_TCL-1001" "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
 
@@ -57,32 +57,25 @@ if { $bCheckIPsPassed != 1 } {
 }
 
 ##################################################################
-# CREATE IP calc_ila
+# CREATE IP tx_fifo
 ##################################################################
 
-set calc_ila [create_ip -name ila -vendor xilinx.com -library ip -version 6.2 -module_name calc_ila]
+set tx_fifo [create_ip -name fifo_generator -vendor xilinx.com -library ip -version 13.2 -module_name tx_fifo]
 
 # User Parameters
 set_property -dict [list \
-  CONFIG.C_DATA_DEPTH {4096} \
-  CONFIG.C_NUM_OF_PROBES {12} \
-  CONFIG.C_PROBE0_WIDTH {32} \
-  CONFIG.C_PROBE10_WIDTH {16} \
-  CONFIG.C_PROBE11_WIDTH {32} \
-  CONFIG.C_PROBE1_WIDTH {32} \
-  CONFIG.C_PROBE2_WIDTH {32} \
-  CONFIG.C_PROBE3_WIDTH {2} \
-  CONFIG.C_PROBE4_WIDTH {8} \
-  CONFIG.C_PROBE5_WIDTH {16} \
-  CONFIG.C_PROBE6_WIDTH {16} \
-  CONFIG.C_PROBE8_WIDTH {32} \
-  CONFIG.C_PROBE9_WIDTH {16} \
-] [get_ips calc_ila]
+  CONFIG.Enable_Safety_Circuit {false} \
+  CONFIG.Fifo_Implementation {Independent_Clocks_Block_RAM} \
+  CONFIG.Input_Data_Width {32} \
+  CONFIG.Input_Depth {32768} \
+  CONFIG.Performance_Options {First_Word_Fall_Through} \
+  CONFIG.Read_Data_Count {false} \
+] [get_ips tx_fifo]
 
 # Runtime Parameters
 set_property -dict { 
-  GENERATE_SYNTH_CHECKPOINT {1}
-} $calc_ila
+  GENERATE_SYNTH_CHECKPOINT {0}
+} $tx_fifo
 
 ##################################################################
 

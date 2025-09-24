@@ -47,13 +47,13 @@ entity gen_timing_events is
 --    beam_cycle_window : out std_logic; 
     adc_samplenum   : out std_logic_vector(31 downto 0); 
     tp_pos_pulse    : out std_logic_vector(4 downto 0); 
-    tp_neg_pulse    : out std_logic_vector(4 downto 0)
+    tp_neg_pulse    : out std_logic_vector(4 downto 0);
 --    timestamp       : out std_logic_vector(31 downto 0); 
 --    watchdog_clock  : out std_logic; 
 --    watchdog_pulse  : out std_logic; 
 --    startup_cnt     : out std_logic_vector(31 downto 0); 
 --    fault_startup   : out std_logic; 
---    fp_trig_dly_out : out std_logic
+    fp_trig_dly_out : out std_logic
   );
 end gen_timing_events;
 
@@ -77,5 +77,14 @@ begin
             trig => trig,
             sampnum => adc_samplenum
         );
+        
+    fp_trig : entity work.trig_pulse
+        port map(
+            clk => clk,
+            trig => trig,
+            delay => 32d"0",
+            width => 16d"20",
+            pulse => fp_trig_dly_out
+         );
 
 end Behavioral;

@@ -78,65 +78,9 @@ architecture Behavioral of calc_stats is
     signal fake_adc : signed(15 downto 0); 
     signal fwhm     : std_logic_vector(15 downto 0); 
     
---    attribute mark_debug : string; 
---    attribute mark_debug of baseline_avg: signal is "true";
---    attribute mark_debug of integration: signal is "true";
---    attribute mark_debug of present_state: signal is "true";
---    attribute mark_debug of baseline_start: signal is "true";
---    attribute mark_debug of integration_start: signal is "true";
---    attribute mark_debug of adc_data: signal is "true";
-    
-    
---    COMPONENT calc_ila
-    
---    PORT (
---        clk : IN STD_LOGIC;
---        probe0 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
---        probe1 : IN signed(31 DOWNTO 0); 
---        probe2 : IN signed(31 DOWNTO 0); 
---        probe3 : IN state;
---        probe4 : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
---        probe5: IN signed(15 downto 0);
---        probe6: IN signed(15 downto 0);
---        probe7 : IN std_logic;
---        probe8 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
---        probe9 : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
---        probe10 : IN signed(15 downto 0);
---        probe11 : in std_logic_vector(31 downto 0)
---    );
---    END COMPONENT  ;
-    
---    component calc_ila_debug 
---    port(
---        clk : in std_logic; 
---        probe0 : in signed(15 downto 0)
---    );
---    end component; 
 
 begin
     
---    calc_debug : calc_ila
---    PORT MAP (
---        clk => clk,
---        probe0 => adc_samplenum, 
---        probe1 => baseline_avg, 
---        probe2 => integration, 
---        probe3 => present_state,
---        probe4 => (others => '0'),
---        probe5 => peak_val,
---        probe6 => adc_data,
---        probe7 => trig,
---        probe8 => peak_idx,
---        probe9 => fwhm,
---        probe10 => adc_data_dly,
---        probe11 => gate_start
---    );
-
---    calc_debug: calc_ila_debug
---    port map(
---        clk => clk,
---        probe0 => adc_data
---    );
 
     pulse_fsm : process(clk) begin 
         if(rising_edge(clk)) then 

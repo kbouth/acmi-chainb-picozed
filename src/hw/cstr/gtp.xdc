@@ -29,3 +29,4 @@ connect_debug_port u_ila_0/probe11 [get_nets [list {eeprom/address[0]} {eeprom/a
 connect_debug_port u_ila_0/probe16 [get_nets [list eeprom/eeprom_rdy]]
 connect_debug_port u_ila_0/probe18 [get_nets [list eeprom/trig]]
 
+

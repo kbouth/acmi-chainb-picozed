@@ -53,9 +53,7 @@ architecture Behavioral of calc_peak is
     signal peak_temp  : signed(15 downto 0):=(others => '0');  
     signal index : std_logic_vector(31 downto 0):= (others => '0'); 
     signal prev_trig : std_logic; 
-    
-    
-
+    signal adc_data_delay: signed(15 downto 0); 
 begin
 
 
@@ -63,6 +61,7 @@ begin
         if(rising_edge(clk)) then 
         
             prev_trig <= trig; 
+            adc_data_delay <= adc_data; 
             
             case present_state is
                 when IDLE => 
@@ -75,12 +74,12 @@ begin
                 when PEAK => 
                 
                     if(polarity = '0') then 
-                        if(adc_data > peak_temp) then 
+                        if(adc_data_delay > peak_temp) then 
                        peak_index <= samp_num;
                        peak_temp <= adc_data; 
                         end if;
                     else 
-                        if(adc_data < peak_temp) then 
+                        if(adc_data_delay < peak_temp) then 
                        peak_index <= samp_num;
                        peak_temp <= adc_data; 
                         end if;

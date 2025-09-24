@@ -183,18 +183,7 @@ port
          sysclk_in        : in std_logic
         ); 
 end component;
-
---    COMPONENT tx_ila
---    PORT (
---        clk : IN STD_LOGIC;
---        probe0 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
---        probe1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0); 
---        probe2 : IN STD_LOGIC;
---        probe3 : IN STD_LOGIC;
---        probe4 : IN STD_LOGIC;
---        probe5 : IN STD_LOGIC_VECTOR(3 downto 0)
---    );
---    END COMPONENT  ;   
+  
     
     signal txclkout_buf : std_logic;  
     signal rxclkout_buf : std_logic;  
@@ -285,8 +274,11 @@ signal correct_rx        : std_logic:= '0';
 signal rx_data_sync1, rx_data_sync2 : std_logic_vector(31 downto 0);
 signal gtp_tx_data_enb_sync1, gtp_tx_data_enb_sync2 : std_logic;
 
-
-
+attribute mark_debug                 : string;
+attribute mark_debug of tx_data: signal is "true"; 
+attribute mark_debug of empty : signal is "true"; 
+attribute mark_debug of txcharisk : signal is "true"; 
+attribute mark_debug of rd_en : signal is "true"; 
     
 begin
 

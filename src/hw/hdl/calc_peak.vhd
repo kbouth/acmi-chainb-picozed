@@ -76,12 +76,12 @@ begin
                     if(polarity = '0') then 
                         if(adc_data_delay > peak_temp) then 
                        peak_index <= samp_num;
-                       peak_temp <= adc_data; 
+                       peak_temp <= adc_data_delay; 
                         end if;
                     else 
                         if(adc_data_delay < peak_temp) then 
                        peak_index <= samp_num;
-                       peak_temp <= adc_data; 
+                       peak_temp <= adc_data_delay; 
                         end if;
                     
                     end if;  

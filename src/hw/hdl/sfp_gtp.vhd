@@ -274,11 +274,13 @@ signal correct_rx        : std_logic:= '0';
 signal rx_data_sync1, rx_data_sync2 : std_logic_vector(31 downto 0);
 signal gtp_tx_data_enb_sync1, gtp_tx_data_enb_sync2 : std_logic;
 
-attribute mark_debug                 : string;
-attribute mark_debug of tx_data: signal is "true"; 
-attribute mark_debug of empty : signal is "true"; 
-attribute mark_debug of txcharisk : signal is "true"; 
-attribute mark_debug of rd_en : signal is "true"; 
+--attribute mark_debug                 : string;
+--attribute mark_debug of tx_data: signal is "true"; 
+--attribute mark_debug of tx_fifo_dout : signal is "true"; 
+--attribute mark_debug of gtp_tx_data: signal is "true"; 
+--attribute mark_debug of empty : signal is "true"; 
+--attribute mark_debug of txcharisk : signal is "true"; 
+--attribute mark_debug of rd_en : signal is "true"; 
     
 begin
 
@@ -470,7 +472,6 @@ begin
             if reset = '1' then 
                 tx_data <= x"505152BC";
                 txcharisk <= x"1";
---                state <= IDLE;  
             else 
                 if(empty = '0') then 
                     tx_data <= tx_fifo_dout; 
@@ -481,27 +482,6 @@ begin
                     txcharisk <= x"1"; 
                     rd_en <= '0'; 
                 end if; 
---                case state is 
---                    when IDLE =>
---                        tx_data <= x"505152BC";
---                        txcharisk <= x"1";
---                        if empty = '0' then
---                            state <= TX;
---                            rd_en <= '1';  
---                        end if; 
-
-                        
---                    when TX => 
---                        if (empty = '0') then 
---                            tx_data <= tx_fifo_dout;
---                            txcharisk <= x"0";
---                            rd_en <= '1'; 
---                        else
---                            rd_en <= '0'; 
---                            state <= IDLE; 
---                        end if; 
-                          
---                end case; 
             end if; 
         end if; 
     end process;

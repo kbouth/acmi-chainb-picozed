@@ -41,7 +41,6 @@ entity calc_charge is
    clk                : in std_logic;
    trig               : in std_logic;
    adc_samplenum      : in std_logic_vector(31 downto 0);
---   test_pulse_gates   : in std_logic_vector(3 downto 0);  
    params             : in eeprom_parameters_type;            
    adc_data       : in std_logic_vector(15 downto 0);
 --   adc_data_inv_dly   : out std_logic_vector(15 downto 0);
@@ -63,6 +62,7 @@ signal adc_data_dly : STD_LOGIC_VECTOR(15 downto 0);
 signal pulse_stats_d : pulse_stats_array; 
 signal adc_data_in   : std_logic_vector(15 downto 0); 
 signal beam_adc_delay : std_logic_vector(31 downto 0); 
+
 
 begin
   adc_shift : c_shift_ram_0

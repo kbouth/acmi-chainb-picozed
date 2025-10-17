@@ -39,11 +39,11 @@ entity eeprom is
     reset       : in std_logic; 
     opcode_in   : in std_logic_vector(7 downto 0); 
     address     : in std_logic_vector(15 downto 0);
-    data_in     : in std_logic_vector(31 downto 0);
+    data_in     : in std_logic_vector(7 downto 0);
     n_bytes     : in std_logic_vector(2 downto 0);  
     trig        : in std_logic; 
     
-    rddata      : out std_logic_vector(31 downto 0); 
+    rddata      : out std_logic_vector(7 downto 0); 
     
     ------ EEPROM SPI PORTS ----------
     sdo         : in std_logic; 
@@ -72,11 +72,11 @@ architecture Behavioral of eeprom is
     
 
     signal bit_count      : integer := 0;
-    signal shift_register : std_logic_vector(55 downto 0) := (others => '0');
+    signal shift_register : std_logic_vector(31 downto 0) := (others => '0');
     signal cs_int       : std_logic := '1';
     signal sdi_int       : std_logic := '0';
-    signal sdo_buffer_temp   : std_logic_vector(31 downto 0) := (others => '0');
-    signal sdo_buffer   : std_logic_vector(31 downto 0) := (others => '0');
+    signal sdo_buffer_temp,sdo_buffer_temp2   : std_logic_vector(7 downto 0) := (others => '0');
+    signal sdo_buffer   : std_logic_vector(7 downto 0) := (others => '0');
     
     signal clk_enable     : std_logic := '0';
     signal clk_count      : integer := 0;
@@ -87,6 +87,16 @@ architecture Behavioral of eeprom is
     signal clk_count_temp  : integer := 0; 
     signal latency_flag    : std_logic:= '0'; 
     signal start          : std_logic:= '0'; 
+    
+    signal spi_done_d : std_logic := '0';
+    
+    attribute mark_debug                 : string;
+    attribute mark_debug of sclk_int: signal is "true";
+    attribute mark_debug of bit_count: signal is "true"; 
+    attribute mark_debug of present_state: signal is "true";
+    attribute mark_debug of shift_register: signal is "true";
+    attribute mark_debug of sdo_buffer: signal is "true";
+    attribute mark_debug of spi_done : signal is "true"; 
     
 begin
     
@@ -113,7 +123,7 @@ begin
             if reset = '1' then 
                 sclk <= '0'; 
             else 
-                if cs_int = '1' or present_state = IDLE or present_state = OPCODE or present_state = DONE then 
+                if csn = '1' or present_state = IDLE or present_state = OPCODE or present_state = DONE then 
                         sclk <= '0';
                         sclk_int <= clk_enable;
                 else
@@ -133,22 +143,17 @@ begin
     fsm: process(sclk_int) begin 
         if rising_edge(sclk_int) then 
             if(reset = '1') then 
-                spi_done <= '0'; 
-                sdi <= '0'; 
-                clk_pulses <= 8;
-                bit_count <= 0;  
-                shift_register <= (others => '0');
-                rddata <= (others => '0');  
                 present_state <= IDLE; 
             else
             
                 case present_state is
-                    when IDLE =>
+                    when IDLE => 
                         spi_done <= '0'; 
                         sdi <= '0'; 
-                        clk_pulses <= 8;
-                        bit_count <= 0;   
+                        clk_pulses <= 8;   
+                        bit_count <= 1;
                         if trig = '1' then 
+                            csn <= '0';
                             present_state <= OPCODE; 
                         else 
                             present_state <= IDLE; 
@@ -156,46 +161,51 @@ begin
                         
                     when OPCODE =>
                         
+                        
                      
                             case opcode_in is
                                 when "00000110" => 
                                    
                                     clk_pulses <= 8;  
-                                    shift_register(55 downto 48) <= opcode_in; 
+                                    shift_register(31 downto 24) <= opcode_in; 
+                                    shift_register(23 downto 0) <= (others => '0'); 
                                     present_state <= WREN;
                                    
                                 when "00000100" => 
                                 
                                     clk_pulses <= 8;  
-                                    shift_register(55 downto 48) <= opcode_in; 
+                                    shift_register(31 downto 24) <= opcode_in;
+                                    shift_register(23 downto 0) <= (others => '0');  
                                     present_state <= WRDI;
                                 
                                 when "00000101" => 
                                     
                                     clk_pulses <= 16; 
-                                    shift_register(55 downto 48) <= opcode_in; 
+                                    shift_register(31 downto 24) <= opcode_in; 
+                                    shift_register(23 downto 0) <= (others => '0'); 
                                     present_state <= RDSR; 
                                     
                                 when "00000001" => 
                                     
                                     clk_pulses <= 16;
-                                    shift_register(55 downto 48) <= opcode_in; 
-                                    shift_register(47 downto 40) <= data_in(7 downto 0);
-                                    shift_register(39 downto 0) <= (others => '0');  
+                                    shift_register(31 downto 24) <= opcode_in; 
+                                    shift_register(23 downto 16) <= data_in;
+                                    shift_register(15 downto 0) <= (others => '0');  
                                     present_state <= WRSR;
                                      
                                 when "00000011" =>
                                  
-                                    clk_pulses <= ((to_integer(unsigned(n_bytes)-1)) * 8) + 32; 
-                                    shift_register(55 downto 48) <= opcode_in; 
-                                    shift_register(47 downto 32) <= address;
+                                    clk_pulses <= 32; 
+                                    shift_register(31 downto 24) <= opcode_in; 
+                                    shift_register(23 downto 8) <= address;
+                                    shift_register(7 downto 0) <= (others => '0'); 
                                     present_state <= READ; 
                                     
                                 when "00000010" => 
-                                    clk_pulses <= ((to_integer(unsigned(n_bytes)-1)) * 8) + 32;
-                                    shift_register(55 downto 48) <= opcode_in; 
-                                    shift_register(47 downto 32) <= address; 
-                                    shift_register(31 downto (32 - to_integer(unsigned(n_bytes))*8)) <= data_in((to_integer(unsigned(n_bytes))*8 - 1) downto 0);                        
+                                    clk_pulses <= 32;
+                                    shift_register(31 downto 24) <= opcode_in; 
+                                    shift_register(23 downto 8) <= address; 
+                                    shift_register(7 downto 0) <= data_in;                    
                                     present_state <= WRITE;
                                 when others => present_state <= IDLE;    
                             end case; 
@@ -207,7 +217,7 @@ begin
                             spi_done <= '1'; 
                             present_state <= DONE; 
                         else
-                            sdi <= shift_register(54 - bit_count); 
+                            sdi <= shift_register(31 - bit_count); 
                             bit_count <= bit_count + 1;
                             clk_pulses <= clk_pulses - 1;  
                             present_state <= WREN; 
@@ -220,7 +230,7 @@ begin
                             spi_done <= '1';
                             present_state <= DONE; 
                         else
-                            sdi <= shift_register(54 - bit_count); 
+                            sdi <= shift_register(31 - bit_count); 
                             bit_count <= bit_count + 1;
                             clk_pulses <= clk_pulses - 1;  
                             present_state <= WRDI; 
@@ -233,12 +243,15 @@ begin
                             spi_done <= '1';
                             present_state <= DONE; 
                         else
-                            sdi <= shift_register(54 - bit_count); 
+                            sdi <= shift_register(31 - bit_count); 
                             bit_count <= bit_count + 1;
                             clk_pulses <= clk_pulses - 1;  
                             present_state <= RDSR; 
                         end if; 
                         
+                        if clk_pulses <= 8 then 
+                            sdo_buffer(7 - (bit_count - 9)) <= sdo;
+                        end if;
                    when WRSR =>
                     
                          
@@ -246,7 +259,7 @@ begin
                             spi_done <= '1'; 
                             present_state <= DONE; 
                         else
-                            sdi <= shift_register(54 - bit_count); 
+                            sdi <= shift_register(31 - bit_count); 
                             bit_count <= bit_count + 1;
                             clk_pulses <= clk_pulses - 1;  
                             present_state <= WRSR; 
@@ -258,11 +271,15 @@ begin
                             spi_done <= '1';             
                             present_state <= DONE; 
                         else
-                            sdi <= shift_register(54 - bit_count); 
+                            sdi <= shift_register(31 - bit_count); 
                             bit_count <= bit_count + 1;
                             clk_pulses <= clk_pulses - 1;  
                             present_state <= READ; 
                         end if; 
+                        
+                        if clk_pulses <= 8  then 
+                          sdo_buffer(7 - (bit_count - 25)) <= sdo;
+                        end if;
                         
                    when WRITE =>
                                             
@@ -270,7 +287,7 @@ begin
                             spi_done <= '1'; 
                             present_state <= DONE; 
                         else
-                            sdi <= shift_register(54 - bit_count); 
+                            sdi <= shift_register(31 - bit_count); 
                             bit_count <= bit_count + 1;
                             clk_pulses <= clk_pulses - 1;  
                             present_state <= WRITE; 
@@ -279,7 +296,15 @@ begin
                     when DONE =>  
                         spi_done <= '0';
                         rddata <= sdo_buffer;
-                        present_state <= IDLE; 
+                        csn <= '1';
+           
+                        if(delay_cnt = 0) then
+                            delay_cnt  <= 2; 
+                            present_state <= IDLE;
+                        else 
+                            delay_cnt <= delay_cnt - 1; 
+                        end if;  
+           
                         
                     when others => present_state <= IDLE; 
                 end case; 
@@ -288,36 +313,24 @@ begin
         end if;  
     end process; 
     
-   csb: process(reset,present_state) begin 
-        if(reset = '1') then 
-            cs_int <= '1'; 
-        else
-                case present_state is
-                 when IDLE => cs_int <= '1';  
-                 when others => cs_int <= '0'; 
-                end case;
-        end if; 
-    end process; 
+--   csb: process(reset,present_state) begin 
+--        if(reset = '1') then 
+--            cs_int <= '1'; 
+--        else
+--                case present_state is
+--                 when IDLE => cs_int <= '1';  
+--                 when others => cs_int <= '0'; 
+--                end case;
+--        end if; 
+--    end process; 
     
-    sdo_read: process(reset, sclk_int) begin 
-        if reset = '1' then 
-          sdo_buffer <= (others => '0');   
-        else
-          if (rising_edge(sclk_int)) then 
-            case present_state is 
-                when RDSR =>
-                    if clk_pulses <= 8 then 
-                        sdo_buffer(31 - (bit_count - 8)) <= sdo;
-                    end if;
-                when READ =>
-                    if clk_pulses <= to_integer(unsigned(n_bytes))*8  then 
-                          sdo_buffer(31 - (bit_count - 24)) <= sdo;
-                    end if;
-                when others => sdo_buffer <= sdo_buffer; 
-            end case; 
-          end if; 
-        end if; 
-    end process;
+--    sdo_read: process(sys_clk) begin 
+--          if (rising_edge(sys_clk)) then 
+--                if(spi_done = '1') then 
+--                    sdo_buffer_temp <= sdo_buffer;   
+--                end if;         
+--          end if;
+--    end process;
     
-    csn <= cs_int;     
+--    csn <= cs_int;     
 end Behavioral;

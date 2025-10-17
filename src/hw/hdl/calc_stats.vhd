@@ -67,10 +67,10 @@ architecture Behavioral of calc_stats is
     constant BASELINE_LEN     : std_logic_vector(7 downto 0) := 8d"32";
     constant INTEGRAL_LEN     : std_logic_vector(7 downto 0) := 8d"40";
     
-    signal baseline_avg : signed(31 downto 0):= 32d"0"; 
-    signal integration : signed(31 downto 0):= 32d"0"; 
+    signal baseline_avg : signed(31 downto 0); 
+    signal integration : signed(31 downto 0); 
     
-    signal peak_val     : signed(15 downto 0) := (others => '0');
+    signal peak_val     : signed(15 downto 0);
     signal peak_idx     : std_logic_vector(31 downto 0):= (others => '0');
     signal peak_found   : std_logic; 
     signal sample_index : integer range 0 to 127 := 0;

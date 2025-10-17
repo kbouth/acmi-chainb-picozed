@@ -33,14 +33,14 @@ begin
     if(rising_edge(clk)) then 
        adc_bs <= resize(adc_data, 32) - baseline;
        
-       if(polarity = '0') then 
-           if(adc_bs <= 0) then 
+       if(polarity = '0') then  -- positive pulse
+           if(adc_bs <= 0) then --filter out any negative values; only add positive values above baseline
                 accum <= 32d"0"; 
            else 
                 accum <= adc_bs; 
            end if;
-       else 
-            if(adc_bs >= 0) then 
+       else                     -- negative pulse
+            if(adc_bs >= 0) then --filter out any positive values; only add negative values above baseline
                 accum <= 32d"0"; 
            else 
                 accum <= adc_bs; 

@@ -145,6 +145,10 @@ architecture behv of top is
   signal gtp_rx_data        : std_logic_vector(31 downto 0);
   signal gtp_tx_data        : std_logic_vector(31 downto 0);
   signal gtp_tx_data_enb    : std_logic;
+  
+  signal gtp_tx_data_d        : std_logic_vector(31 downto 0);
+  signal gtp_tx_data_enb_d    : std_logic;
+  
   signal gtp_tx_clk         : std_logic;
 
   signal adc_rxdata         : std_logic_vector(15 downto 0);
@@ -154,33 +158,33 @@ architecture behv of top is
   signal peak   : std_logic_vector(16 downto 0); 
   
   signal fp_trig_dly_out : std_logic; 
-
+  signal i2c_regs           : i2c_regs_type;
    --debug signals (connect to ila)
-   attribute mark_debug                 : string;
-   attribute mark_debug of trig: signal is "true";
-   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
-   attribute mark_debug of integral: signal is "true";
-   attribute mark_debug of peak: signal is "true"; 
-   attribute mark_debug of peak_index: signal is "true"; 
-   attribute mark_debug of baseline: signal is "true";
-   attribute mark_debug of fwhm: signal is "true"; 
-   attribute mark_debug of adc_data: signal is "true";
-   attribute mark_debug of fp_trig_dly_out: signal is "true"; 
+--   attribute mark_debug                 : string;
+--   attribute mark_debug of trig: signal is "true";
+--   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
+--   attribute mark_debug of integral: signal is "true";
+--   attribute mark_debug of peak: signal is "true"; 
+--   attribute mark_debug of peak_index: signal is "true"; 
+--   attribute mark_debug of baseline: signal is "true";
+--   attribute mark_debug of fwhm: signal is "true"; 
+--   attribute mark_debug of adc_data: signal is "true";
+--   attribute mark_debug of fp_trig_dly_out: signal is "true"; 
 
 
 begin
 
-process(adc_clk)
-begin
-  if rising_edge(adc_clk) then
-beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
-integral <= pulse_stats(0).integral;
-peak  <= pulse_stats(0).peak;
-peak_index <= pulse_stats(0).peak_index; 
-baseline <= pulse_stats(0).baseline; 
-fwhm <= pulse_stats(0).fwhm; 
-  end if;
-end process;
+--process(adc_clk)
+--begin
+--  if rising_edge(adc_clk) then
+--beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
+--integral <= pulse_stats(0).integral;
+--peak  <= pulse_stats(0).peak;
+--peak_index <= pulse_stats(0).peak_index; 
+--baseline <= pulse_stats(0).baseline; 
+--fwhm <= pulse_stats(0).fwhm; 
+--  end if;
+--end process;
 
 
 dbg(0) <= adc_clk;
@@ -336,7 +340,6 @@ calc_q: entity work.calc_charge
    clk => adc_clk,
    trig => trig,
    adc_samplenum => adc_samplenum,
---   test_pulse_gates => tp_gates, -- no purpose... prob get rid of this signal
    params => eeprom_params,
    adc_data => adc_data,
 --   adc_data_inv_dly => adc_data_dly,
@@ -389,6 +392,7 @@ send_results: entity work.tx_kria_data
 --    beam_cycle_window => beam_cycle_window,
     adc_data => adc_data,
 --    adc_data_dly => adc_data_dly,
+--    i2c_regs => i2c_regs,
     pulse_stats => pulse_stats,
     eeprom_params => eeprom_params,
 --    faults_rdbk => faults_rdbk,
@@ -409,8 +413,8 @@ backend_gtp: entity work.backend_comm_wrapper
     gtp_refclk_n => gtp_refclk1_n,
     gtp_refclk_p => gtp_refclk1_p,
     q0_clk0_refclk_out => gtp_refclk,
-    gtp_tx_data => gtp_tx_data,
-    gtp_tx_data_enb => gtp_tx_data_enb,
+    gtp_tx_data => gtp_tx_data_d,
+    gtp_tx_data_enb => gtp_tx_data_enb_d,
     gtp_rx_clk => gtp_rx_clk,
     gtp_rx_data => gtp_rx_data,
 --    gtp_tx_clk => gtp_tx_clk,
@@ -451,14 +455,14 @@ eeprom: entity work.eeprom_interface
 --	sig_out => spi_xfer_stretch
 --);
 
-stretch_1 : entity work.stretch
-  port map (
-	clk => adc_clk,
-	reset => '0',
-	sig_in => trig,
-	len => 4000000, -- ~25ms;
-	sig_out => trig_stretch
-);
+--stretch_1 : entity work.stretch
+--  port map (
+--	clk => adc_clk,
+--	reset => '0',
+--	sig_in => trig,
+--	len => 4000000, -- ~25ms;
+--	sig_out => trig_stretch
+--);
 
 
 

@@ -29,26 +29,16 @@ end record pzed_parameters_type;
 
 type eeprom_parameters_type is record
     header                   : std_logic_vector(31 downto 0);
-    tp1_gate_delay           : std_logic_vector(31 downto 0);
-    tp1_gate_width           : std_logic_vector(31 downto 0);
     tp1_pulse_delay          : std_logic_vector(31 downto 0);
     tp1_pulse_width          : std_logic_vector(31 downto 0); 
-    tp1_threshold            : std_logic_vector(15 downto 0);
-    tp2_gate_delay           : std_logic_vector(31 downto 0);
-    tp2_gate_width           : std_logic_vector(31 downto 0);
     tp2_pulse_delay          : std_logic_vector(31 downto 0);
     tp2_pulse_width          : std_logic_vector(31 downto 0); 
-    tp2_threshold            : std_logic_vector(15 downto 0);    
-    tp3_gate_delay           : std_logic_vector(31 downto 0);
-    tp3_gate_width           : std_logic_vector(31 downto 0);
     tp3_pulse_delay          : std_logic_vector(31 downto 0);
     tp3_pulse_width          : std_logic_vector(31 downto 0); 
-    tp3_threshold            : std_logic_vector(15 downto 0);
     beam_adc_delay           : std_logic_vector(31 downto 0);
     tp1_adc_delay            : std_logic_vector(31 downto 0);
     tp2_adc_delay            : std_logic_vector(31 downto 0);
     tp3_adc_delay            : std_logic_vector(31 downto 0);    
-    beam_threshold           : std_logic_vector(15 downto 0); 
     beam_oow_threshold       : std_logic_vector(15 downto 0);
     tp1_int_high_limit       : std_logic_vector(31 downto 0);
     tp1_int_low_limit        : std_logic_vector(31 downto 0);
@@ -85,11 +75,10 @@ type eeprom_parameters_type is record
     baseline_low_limit       : std_logic_vector(31 downto 0);
     baseline_high_limit      : std_logic_vector(31 downto 0); 
     charge_calibration       : std_logic_vector(31 downto 0); 
-    crc32_eeprom             : std_logic_vector(31 downto 0); 
-    crc32_calc               : std_logic_vector(31 downto 0); 
+    crc32_eeprom             : std_logic_vector(31 downto 0);
+    crc32_calc               : std_logic_vector(31 downto 0);  
     accum_q_min              : std_logic_vector(31 downto 0);
-    accum_length             : std_logic_vector(31 downto 0);
-    beamaccum_limit_calc     : std_logic_vector(31 downto 0);             
+    accum_length             : std_logic_vector(31 downto 0);            
 end record eeprom_parameters_type;
 
 
@@ -105,6 +94,14 @@ type pulse_stats_type is record
 end record pulse_stats_type;
 
 type pulse_stats_array is array(0 to 4) of pulse_stats_type;
+
+
+type i2c_regs_type is record
+   temp0 : std_logic_vector(15 downto 0);
+   temp1 : std_logic_vector(15 downto 0);
+   Vreg0 : std_logic_vector(15 downto 0);
+   Ireg0 : std_logic_vector(15 downto 0);
+end record i2c_regs_type;
 
 end acmi_package;
 

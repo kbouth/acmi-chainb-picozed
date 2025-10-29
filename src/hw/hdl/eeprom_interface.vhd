@@ -69,16 +69,16 @@ architecture Behavioral of eeprom_interface is
     signal beam_adc_delay : std_logic_vector(31 downto 0); 
     
     attribute mark_debug                 : string;
-    attribute mark_debug of trig: signal is "true";
+--    attribute mark_debug of trig: signal is "true";
 --    attribute mark_debug of eeprom_rdy: signal is "true";
-    attribute mark_debug of eeprom_state : signal is "true"; 
-    attribute mark_debug of opcode : signal is "true"; 
-    attribute mark_debug of address: signal is "true"; 
-    attribute mark_debug of rddata : signal is "true"; 
+--    attribute mark_debug of eeprom_state : signal is "true"; 
+--    attribute mark_debug of opcode : signal is "true"; 
+--    attribute mark_debug of address: signal is "true"; 
+--    attribute mark_debug of rddata : signal is "true"; 
     attribute mark_debug of eeprom_params: signal is "true";
-    attribute mark_debug of din: signal is "true";
-    attribute mark_debug of dout: signal is "true";
-    attribute mark_debug of csn: signal is "true";
+--    attribute mark_debug of din: signal is "true";
+--    attribute mark_debug of dout: signal is "true";
+--    attribute mark_debug of csn: signal is "true";
 --    attribute mark_debug of bytes: signal is "true"; 
     
     

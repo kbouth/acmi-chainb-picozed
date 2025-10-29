@@ -1,4 +1,3 @@
-
 # ltc2107 adc
 set_property PACKAGE_PIN V4 [get_ports adc_clk_p]
 set_property IOSTANDARD LVDS_25 [get_ports adc_clk_p]
@@ -84,8 +83,6 @@ set_property PULLUP true [get_ports adc_spi_sdo]
 # trigger input and outputs
 set_property PACKAGE_PIN N17 [get_ports fiber_trig_in]
 set_property IOSTANDARD LVCMOS33 [get_ports fiber_trig_in]
-set_property DRIVE 12 [get_ports fiber_trig_in]
-set_property SLEW FAST [get_ports fiber_trig_in]
 
 set_property PACKAGE_PIN P15 [get_ports fiber_trig_led]
 set_property IOSTANDARD LVCMOS33 [get_ports fiber_trig_led]
@@ -199,7 +196,6 @@ set_property SLEW FAST [get_ports {tp_pos_pulse[0]}]
 
 
 
-
 #picozed to artix spi
 set_property PACKAGE_PIN D21 [get_ports pzed_spi_dout]
 set_property IOSTANDARD LVCMOS33 [get_ports pzed_spi_dout]
@@ -217,6 +213,124 @@ set_property PACKAGE_PIN E21 [get_ports pzed_spi_cs]
 set_property IOSTANDARD LVCMOS33 [get_ports pzed_spi_cs]
 
 
+
+
+
+
+# waveform data (artix to picoZed)
+set_property PACKAGE_PIN H20 [get_ports {waveform_data_p[0]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[0]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[0]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[0]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[0]}]
+
+set_property PACKAGE_PIN G15 [get_ports {waveform_data_p[1]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[1]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[1]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[1]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[1]}]
+
+set_property PACKAGE_PIN J14 [get_ports {waveform_data_p[2]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[2]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[2]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[2]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[2]}]
+
+set_property PACKAGE_PIN G17 [get_ports {waveform_data_p[3]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[3]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[3]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[3]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[3]}]
+
+set_property PACKAGE_PIN J15 [get_ports {waveform_data_p[4]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[4]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[4]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[4]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[4]}]
+
+set_property PACKAGE_PIN H17 [get_ports {waveform_data_p[5]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[5]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[5]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[5]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[5]}]
+
+set_property PACKAGE_PIN J22 [get_ports {waveform_data_p[6]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[6]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[6]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[6]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[6]}]
+
+set_property PACKAGE_PIN J19 [get_ports {waveform_data_p[7]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[7]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[7]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[7]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[7]}]
+
+set_property PACKAGE_PIN K21 [get_ports {waveform_data_p[8]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[8]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[8]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[8]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[8]}]
+
+set_property PACKAGE_PIN M21 [get_ports {waveform_data_p[9]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[9]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[9]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[9]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[9]}]
+
+set_property PACKAGE_PIN J20 [get_ports {waveform_data_p[10]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[10]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[10]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[10]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[10]}]
+
+set_property PACKAGE_PIN K18 [get_ports {waveform_data_p[11]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[11]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[11]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[11]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[11]}]
+
+set_property PACKAGE_PIN L19 [get_ports {waveform_data_p[12]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[12]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[12]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[12]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[12]}]
+
+set_property PACKAGE_PIN N22 [get_ports {waveform_data_p[13]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[13]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[13]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[13]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[13]}]
+
+set_property PACKAGE_PIN M18 [get_ports {waveform_data_p[14]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[14]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[14]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[14]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[14]}]
+
+set_property PACKAGE_PIN N18 [get_ports {waveform_data_p[15]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_p[15]}]
+set_property IOSTANDARD LVDS_25 [get_ports {waveform_data_n[15]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_p[15]}]
+set_property DIFF_TERM TRUE [get_ports {waveform_data_n[15]}]
+
+set_property PACKAGE_PIN K13 [get_ports waveform_enb_p]
+set_property IOSTANDARD LVDS_25 [get_ports waveform_enb_p]
+set_property IOSTANDARD LVDS_25 [get_ports waveform_enb_n]
+set_property DIFF_TERM TRUE [get_ports waveform_enb_p]
+set_property DIFF_TERM TRUE [get_ports waveform_enb_n]
+
+set_property PACKAGE_PIN N20 [get_ports waveform_sel_p]
+set_property IOSTANDARD LVDS_25 [get_ports waveform_sel_p]
+set_property IOSTANDARD LVDS_25 [get_ports waveform_sel_n]
+set_property DIFF_TERM TRUE [get_ports waveform_sel_p]
+set_property DIFF_TERM TRUE [get_ports waveform_sel_n]
+
+set_property PACKAGE_PIN L16 [get_ports waveform_clk_p]
+set_property IOSTANDARD LVDS_25 [get_ports waveform_clk_p]
+set_property IOSTANDARD LVDS_25 [get_ports waveform_clk_n]
+set_property DIFF_TERM TRUE [get_ports waveform_clk_p]
+set_property DIFF_TERM TRUE [get_ports waveform_clk_n]
 
 
 
@@ -702,10 +816,6 @@ set_property IOSTANDARD LVCMOS33 [get_ports acis_force_trip]
 #acis_keylock
 set_property PACKAGE_PIN N15 [get_ports acis_keylock]
 set_property IOSTANDARD LVCMOS33 [get_ports acis_keylock]
-
-
-
-
 
 
 

@@ -63,7 +63,8 @@ signal pulse_stats_d : pulse_stats_array;
 signal adc_data_in   : std_logic_vector(15 downto 0); 
 signal beam_adc_delay : std_logic_vector(31 downto 0); 
 
-
+    attribute mark_debug                 : string;
+    attribute mark_debug of pulse_stats: signal is "true";
 begin
   adc_shift : c_shift_ram_0
   PORT MAP (

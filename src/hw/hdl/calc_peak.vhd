@@ -65,10 +65,13 @@ begin
             
             case present_state is
                 when IDLE => 
-                    peak_found <= '0'; 
+                    peak_found <= '0';
+                     
                     
                     if(prev_trig = '0' and trig = '1') then 
                         present_state <= PEAK; 
+                        peak_temp <= 16d"0";
+                        peak_index <= 32d"0"; 
                     end if; 
 
                 when PEAK => 

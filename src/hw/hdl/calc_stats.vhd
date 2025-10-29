@@ -78,6 +78,9 @@ architecture Behavioral of calc_stats is
     signal fake_adc : signed(15 downto 0); 
     signal fwhm     : std_logic_vector(15 downto 0); 
     
+    attribute mark_debug                 : string;
+    attribute mark_debug of present_state: signal is "true";
+    attribute mark_debug of gate_start : signal is "true";
 
 begin
     

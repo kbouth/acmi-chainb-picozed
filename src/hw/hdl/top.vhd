@@ -11,13 +11,15 @@ use UNISIM.VCOMPONENTS.ALL;
 library work;
 use work.acmi_package.ALL;
 
+
+
 entity top is
 generic(
     FPGA_VERSION			: integer := 1;
     SIM_MODE				: integer := 0
     );
   port(
-     -- adc ltc2107
+    -- adc ltc2107
     adc_spi_cs              : out std_logic;
     adc_spi_sck             : out std_logic;
     adc_spi_sdi             : out std_logic;
@@ -25,34 +27,49 @@ generic(
     adc_clk_p               : in std_logic;
     adc_clk_n               : in std_logic;
     adc_data_p              : in std_logic_vector(7 downto 0);
-    adc_data_n              : in std_logic_vector(7 downto 0);
+    adc_data_n              : in std_logic_vector(7 downto 0);  
     adc_of_p                : in std_logic;
     adc_of_n                : in std_logic;
-
+    
     -- trigger input from fiber
+    fiber_trig_in           : in std_logic;
     fiber_trig_led          : out std_logic;
     fiber_trig_fp           : out std_logic;
+    
+    -- waveform data to picoZed
+    waveform_data_p         : out std_logic_vector(15 downto 0);
+    waveform_data_n         : out std_logic_vector(15 downto 0);
+    waveform_clk_p          : out std_logic;
+    waveform_clk_n          : out std_logic;
+    waveform_sel_p          : out std_logic;
+    waveform_sel_n          : out std_logic;
+    waveform_enb_p          : out std_logic;
+    waveform_enb_n          : out std_logic;
+    
+    -- picozed spi
+    pzed_spi_sclk           : in std_logic;                    
+    pzed_spi_din            : out std_logic; 
+    pzed_spi_dout           : in std_logic; 
+    pzed_spi_cs             : in std_logic;   
+    
+    --test pulse signals       
+    tp_pos_pulse            : out std_logic_vector(4 downto 0);
+    tp_neg_pulse            : out std_logic_vector(4 downto 0);
 
-
-    -- gtp to kria
-    gtp_refclk1_p           : in std_logic;
-    gtp_refclk1_n           : in std_logic;
-    gtp_tx0_p               : out std_logic;
-    gtp_tx0_n               : out std_logic;
-    gtp_rx0_p               : in std_logic;
-    gtp_rx0_n               : in std_logic;
-
-
-    --test pulse signals
-    tp_pos_pulse                : out std_logic_vector(4 downto 0);
-    tp_neg_pulse                : out std_logic_vector(4 downto 0);
-
+    --test pulse DAC
+    dac_tp_data             : out std_logic_vector(13 downto 0);
+    dac_tp_clk              : out std_logic;
+    
+    --front panel debug DAC
+    dac_fp_data             : out std_logic_vector(13 downto 0);
+    dac_fp_clk              : out std_logic;
+    
     --fault input readbacks
     fault_bad_power         : in std_logic;
     fault_no_clock          : in std_logic;
     fault_no_pulse          : in std_logic;
     fault_no_trigger        : in std_logic;
-
+    
     -- fault outputs (active low)
     faultsn                 : out std_logic_vector(11 downto 0);
 
@@ -64,24 +81,24 @@ generic(
     acis_fault_rdbk         : in std_logic;
     acis_reset              : in std_logic;
     acis_force_trip         : in std_logic;
-    acis_keylock            : in std_logic;
-
+    acis_keylock            : in std_logic;         
+    
     --watchdog signals
     watchdog_pulse          : out std_logic;
     watchdog_clock          : out std_logic;
-
+    
     --eeprom
     eeprom_csn              : out std_logic;
     eeprom_sck              : out std_logic;
     eeprom_sdi              : out std_logic;
     eeprom_holdn            : out std_logic;
     eeprom_sdo              : in std_logic;
-
+    
     keylock_detect_led      : out std_logic;
-
+        
     dbg                     : out std_logic_vector(9 downto 0);
     dbg_leds                : out std_logic_vector(3 downto 0)
-
+    
     );
 end top;
 
@@ -157,34 +174,23 @@ architecture behv of top is
   signal baseline, fwhm   : std_logic_vector(15 downto 0); 
   signal peak   : std_logic_vector(16 downto 0); 
   
+  signal waveform_data : std_logic_vector(15 downto 0); 
+  signal waveform_clk  : std_logic; 
+  signal waveform_sel  : std_logic; 
+  signal waveform_enb  : std_logic; 
+  
+  
   signal fp_trig_dly_out : std_logic; 
   signal i2c_regs           : i2c_regs_type;
    --debug signals (connect to ila)
---   attribute mark_debug                 : string;
---   attribute mark_debug of trig: signal is "true";
---   attribute mark_debug of beam_adc_delay_dbg: signal is "true"; 
---   attribute mark_debug of integral: signal is "true";
---   attribute mark_debug of peak: signal is "true"; 
---   attribute mark_debug of peak_index: signal is "true"; 
---   attribute mark_debug of baseline: signal is "true";
---   attribute mark_debug of fwhm: signal is "true"; 
---   attribute mark_debug of adc_data: signal is "true";
---   attribute mark_debug of fp_trig_dly_out: signal is "true"; 
+   attribute mark_debug                  : string;
+   attribute mark_debug of adc_data      : signal is "true"; 
+   attribute mark_debug of trig          : signal is "true"; 
+--   attribute mark_debug of pzed_params   : signal is "true"; 
+   
 
 
 begin
-
---process(adc_clk)
---begin
---  if rising_edge(adc_clk) then
---beam_adc_delay_dbg <= eeprom_params.beam_adc_delay; 
---integral <= pulse_stats(0).integral;
---peak  <= pulse_stats(0).peak;
---peak_index <= pulse_stats(0).peak_index; 
---baseline <= pulse_stats(0).baseline; 
---fwhm <= pulse_stats(0).fwhm; 
---  end if;
---end process;
 
 
 dbg(0) <= adc_clk;
@@ -200,7 +206,7 @@ dbg(9) <= trig;
 
 
 
-dbg_leds(0) <= trig_stretch;
+dbg_leds(0) <= trig;
 dbg_leds(1) <= reset;
 dbg_leds(2) <= '0';
 dbg_leds(3) <= spi_xfer_stretch;
@@ -365,13 +371,13 @@ calc_q: entity work.calc_charge
 
 
 -- backend zuDFE to artix slow control SPI interface
-spi_comm: entity work.rx_kria_data
+spi_comm: entity work.artix_spi
   port map(
     clk => adc_clk,
-    gtp_rx_clk => gtp_rx_clk,
-    rst => reset,
---    acis_keylock => acis_keylock_debounced,
-    gtp_rx_data => gtp_rx_data,
+    sclk => pzed_spi_sclk,
+    csn => pzed_spi_cs,
+    din => pzed_spi_dout,
+    dout => pzed_spi_din,
     trig => trig,
     params => pzed_params
  );
@@ -379,52 +385,30 @@ spi_comm: entity work.rx_kria_data
 
 
 ----artix to backend zuDFE data
-send_results: entity work.tx_kria_data
-  generic map (
-    FPGA_VERSION => FPGA_VERSION
-  )
-  port map (
-    clk => adc_clk,
-    reset => reset,
-    trig => trig,
---    startup_cnt => startup_cnt,
---    acis_readbacks => acis_readbacks,
---    beam_cycle_window => beam_cycle_window,
-    adc_data => adc_data,
---    adc_data_dly => adc_data_dly,
---    i2c_regs => i2c_regs,
-    pulse_stats => pulse_stats,
-    eeprom_params => eeprom_params,
---    faults_rdbk => faults_rdbk,
---    faults_lat => faults_lat,
---    timestamp => timestamp,
---    accum => accum,
---    charge_oow => charge_oow,
-    tx_data => gtp_tx_data,
-    tx_data_enb => gtp_tx_data_enb
- );
-
-
----- GTP transceiver for fiber communication
-backend_gtp: entity work.backend_comm_wrapper
-  port map(
-    clk => adc_clk,
-    reset => reset,
-    gtp_refclk_n => gtp_refclk1_n,
-    gtp_refclk_p => gtp_refclk1_p,
-    q0_clk0_refclk_out => gtp_refclk,
-    gtp_tx_data => gtp_tx_data_d,
-    gtp_tx_data_enb => gtp_tx_data_enb_d,
-    gtp_rx_clk => gtp_rx_clk,
-    gtp_rx_data => gtp_rx_data,
---    gtp_tx_clk => gtp_tx_clk,
-    RXN_IN  => gtp_rx0_n,
-    RXP_IN => gtp_rx0_p,
-    TXN_OUT => gtp_tx0_n,
-    TXP_OUT => gtp_tx0_p
-);
-
-
+--send_results: entity work.tx_kria_data
+--  generic map (
+--    FPGA_VERSION => FPGA_VERSION
+--  )
+--  port map (
+--    clk => adc_clk,
+--    reset => reset,
+--    trig => trig,
+----    startup_cnt => startup_cnt,
+----    acis_readbacks => acis_readbacks,
+----    beam_cycle_window => beam_cycle_window,
+--    adc_data => adc_data,
+----    adc_data_dly => adc_data_dly,
+----    i2c_regs => i2c_regs,
+--    pulse_stats => pulse_stats,
+--    eeprom_params => eeprom_params,
+----    faults_rdbk => faults_rdbk,
+----    faults_lat => faults_lat,
+----    timestamp => timestamp,
+----    accum => accum,
+----    charge_oow => charge_oow,
+--    tx_data => gtp_tx_data,
+--    tx_data_enb => gtp_tx_data_enb
+-- );
 
 ---- non-volatile memory for settings
 eeprom: entity work.eeprom_interface
@@ -466,7 +450,15 @@ eeprom: entity work.eeprom_interface
 
 
 
+-- lvds output buffers 
+waveform_enb_lvds      : OBUFDS  port map (O => waveform_enb_p, OB => waveform_enb_n, I => waveform_enb);
+waveform_clk_lvds      : OBUFDS  port map (O => waveform_clk_p, OB => waveform_clk_n, I => waveform_clk);
+waveform_sel_lvds      : OBUFDS  port map (O => waveform_sel_p, OB => waveform_sel_n, I => waveform_sel);
 
+waveform_lvds : for i in 0 to 15 generate
+ begin
+    data_inst : OBUFDS port map (O => waveform_data_p(i), OB => waveform_data_n(i), I => waveform_data(i));
+end generate;
 
 
 

@@ -167,6 +167,8 @@ architecture behv of top is
   signal gtp_tx_data_enb_d    : std_logic;
   
   signal gtp_tx_clk         : std_logic;
+  
+  signal integ_done         : std_logic; 
 
   signal adc_rxdata         : std_logic_vector(15 downto 0);
   signal beam_adc_delay_dbg : std_logic_vector(31 downto 0);
@@ -354,19 +356,18 @@ calc_q: entity work.calc_charge
 
 
 ---- 15 min charge accumulator
---boxcar: entity work.accumulator
---  port map(
---    clk => adc_clk,
---    rst => pzed_params.accum_reset,
+boxcar: entity work.accumulator
+  port map(
+    clk => adc_clk,
+    rst => pzed_params.accum_reset,
 --    faultn => acis_faultn,
---    accum_len => eeprom_params.accum_length(12 downto 0),
+    trig => trig,
+    accum_len => eeprom_params.accum_length(12 downto 0),
 --    beam_detect_window => beam_detect_window,
---    accum_update => accum_update,
---    q_min => eeprom_params.accum_q_min,
---    sample => pulse_stats(0).integral,
---    charge_oow => charge_oow,
---    accum => accum
---);
+    q_min => eeprom_params.accum_q_min,
+    sample => pulse_stats(0).integral,
+    accum => accum
+);
 
 
 
@@ -385,30 +386,31 @@ spi_comm: entity work.artix_spi
 
 
 ----artix to backend zuDFE data
---send_results: entity work.tx_kria_data
---  generic map (
---    FPGA_VERSION => FPGA_VERSION
---  )
---  port map (
---    clk => adc_clk,
---    reset => reset,
---    trig => trig,
-----    startup_cnt => startup_cnt,
-----    acis_readbacks => acis_readbacks,
-----    beam_cycle_window => beam_cycle_window,
---    adc_data => adc_data,
-----    adc_data_dly => adc_data_dly,
-----    i2c_regs => i2c_regs,
---    pulse_stats => pulse_stats,
---    eeprom_params => eeprom_params,
-----    faults_rdbk => faults_rdbk,
-----    faults_lat => faults_lat,
-----    timestamp => timestamp,
-----    accum => accum,
-----    charge_oow => charge_oow,
---    tx_data => gtp_tx_data,
---    tx_data_enb => gtp_tx_data_enb
--- );
+send_results: entity work.tx_kria_data
+  generic map (
+    FPGA_VERSION => FPGA_VERSION
+  )
+  port map (
+    clk => adc_clk,
+    reset => reset,
+    trig => trig,
+--    startup_cnt => startup_cnt,
+--    acis_readbacks => acis_readbacks,
+--    beam_cycle_window => beam_cycle_window,
+    adc_data => adc_data,
+--    adc_data_dly => adc_data_dly,
+--    i2c_regs => i2c_regs,
+    pulse_stats => pulse_stats,
+    eeprom_params => eeprom_params,
+--    faults_rdbk => faults_rdbk,
+--    faults_lat => faults_lat,
+--    timestamp => timestamp,
+    accum => accum,
+--    charge_oow => charge_oow,
+    tx_clk  => waveform_clk,
+    tx_data => waveform_data,
+    tx_data_enb => waveform_enb
+ );
 
 ---- non-volatile memory for settings
 eeprom: entity work.eeprom_interface
@@ -448,7 +450,7 @@ eeprom: entity work.eeprom_interface
 --	sig_out => trig_stretch
 --);
 
-
+waveform_sel <= '1'; 
 
 -- lvds output buffers 
 waveform_enb_lvds      : OBUFDS  port map (O => waveform_enb_p, OB => waveform_enb_n, I => waveform_enb);

@@ -4,12 +4,12 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity calc_integ is
   Port ( 
-    clk         : in  std_logic; 
-    trig        : in  std_logic; 
-    polarity    : in std_logic; 
-    adc_data    : in  signed(15 downto 0); 
-    baseline    : in  signed(31 downto 0); 
-    integration : out signed(31 downto 0)
+    clk              : in  std_logic; 
+    trig             : in  std_logic; 
+    polarity         : in std_logic; 
+    adc_data         : in  signed(15 downto 0); 
+    baseline         : in  signed(31 downto 0); 
+    integration      : out signed(31 downto 0)
   );
 end calc_integ;
 
@@ -59,6 +59,7 @@ begin
       case present_state is
 
         when IDLE =>
+        
           if (prev_trig = '0' and trig = '1') then
             accumulator   <= 32d"0";
             counter       <= INTEG_LEN - 1;
@@ -69,7 +70,7 @@ begin
 
           if counter = 0 then
             result  <= accumulator; 
-            present_state <= IDLE;
+            present_state <= IDLE; 
           else 
             counter <= counter - 1;
             accumulator <= signed(accumulator) + accum; 

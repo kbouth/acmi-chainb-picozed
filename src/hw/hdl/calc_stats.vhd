@@ -171,7 +171,7 @@ begin
         ); 
 
     pulse_stats.baseline <= std_logic_vector(baseline_avg(15 downto 0));  -- truncate to 16 bits
-    pulse_stats.integral <= std_logic_vector(integration);  -- already 32-bit
+    pulse_stats.integral <= std_logic_vector(abs(integration));  -- already 32-bit
     pulse_stats.peak       <= std_logic_vector(resize(peak_val,17));
     pulse_stats.peak_index <= peak_idx;
     pulse_stats.peak_found <= peak_found;

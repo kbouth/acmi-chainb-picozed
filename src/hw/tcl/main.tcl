@@ -36,7 +36,8 @@ proc setSources {} {
   lappend Sources {"../hdl/sampnum.vhd" "VHDL 2008"}
   lappend Sources {"../hdl/stretch.vhd" "VHDL 2008"}
   lappend Sources {"../hdl/tx_kria_data.vhd" "VHDL 2008"}
-  lappend Sources {"../hdl/artix_spi.vhd" "VHDL 2008"}          
+  lappend Sources {"../hdl/artix_spi.vhd" "VHDL 2008"}  
+  lappend Sources {"../hdl/accumulator.vhd" "VHDL 2008"}        
 
   lappend Sources {"../cstr/pins.xdc"  "XDC"} 
   lappend Sources {"../cstr/gtp.xdc"  "XDC"}     
@@ -71,6 +72,7 @@ proc doOnCreate {} {
   source ${TclPath}/adc_fifo.tcl
   source ${TclPath}/blk_mem_gen_0.tcl
   source ${TclPath}/c_shift_ram_0.tcl
+  source ${TclPath}/accum_circ_buff.tcl
   
 
   addSources "Sources" 

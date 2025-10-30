@@ -90,13 +90,13 @@ architecture Behavioral of eeprom is
     
     signal spi_done_d : std_logic := '0';
     
-    attribute mark_debug                 : string;
-    attribute mark_debug of sclk_int: signal is "true";
-    attribute mark_debug of bit_count: signal is "true"; 
-    attribute mark_debug of present_state: signal is "true";
-    attribute mark_debug of shift_register: signal is "true";
-    attribute mark_debug of sdo_buffer: signal is "true";
-    attribute mark_debug of spi_done : signal is "true"; 
+--    attribute mark_debug                 : string;
+--    attribute mark_debug of sclk_int: signal is "true";
+--    attribute mark_debug of bit_count: signal is "true"; 
+--    attribute mark_debug of present_state: signal is "true";
+--    attribute mark_debug of shift_register: signal is "true";
+--    attribute mark_debug of sdo_buffer: signal is "true";
+--    attribute mark_debug of spi_done : signal is "true"; 
     
 begin
     
